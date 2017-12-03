@@ -3,7 +3,6 @@ import java.sql.*;
 public class Connector {
 
   public void connect() {
-    Config config = new Config();
     String HOST = Config.host;
     String USER = Config.user;
     String PWD = Config.pwd;
