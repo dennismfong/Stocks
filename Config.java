@@ -1,5 +1,5 @@
 public class Config {
-	public String HOST = "...";
-  public String USER = "...";
-  public String PWD = "...";
+	public static String host = "...";
+  public static String user = "...";
+  public static String pwd = "...";
 }
