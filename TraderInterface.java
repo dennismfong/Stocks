@@ -25,9 +25,11 @@ public class TraderInterface {
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 			System.out.println("Enter in your desired username");
 			String username = br.readLine();
-			Console console = System.console();
-			char[] password = console.readPassword("Enter password");
-			System.out.println(password);
+//			Only works on CSIL and not IntelliJ
+//			Console console = System.console();
+//			String password = new String(console.readPassword("Enter in your desired password"));
+			System.out.println("Enter in your desired password");
+			String password = br.readLine();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
