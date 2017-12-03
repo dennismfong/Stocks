@@ -43,7 +43,6 @@ public class Connector {
     catch (Exception e) {
       System.err.println(e);
     }
-
   }
 
   public static void main(String[] args) {
