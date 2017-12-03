@@ -1,0 +1,1 @@
+mysql -u tnkwong -p -h cs174a.engr.ucsb.edu
