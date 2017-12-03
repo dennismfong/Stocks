@@ -29,8 +29,8 @@ public class Connector {
         int numColumns = rsmd.getColumnCount();
         for (int i = 1; i <= numColumns; i++) {
           System.out.println(rsmd.getColumnName(i) + " " + resultSet.getString(i));
-          System.out.print(", ");
         }
+        System.out.println(); // New line for each row
 
 //        System.out.println(col1 + "\t"
 //          + col2 + "\t"
