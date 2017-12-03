@@ -17,22 +17,29 @@ public class Connector {
       ResultSet resultSet = statement.executeQuery(query);
 
       while (resultSet.next()) {
-        String col1 = resultSet.getString("cname");
-        String col2 = resultSet.getString("state");
-        String col3 = resultSet.getString("phoneNum");
-        String col4 = resultSet.getString("email");
-        String col5 = resultSet.getString("taxId");
-        String col6 = resultSet.getString("username");
-        String col7 = resultSet.getString("password");
+//        String col1 = resultSet.getString("cname");
+//        String col2 = resultSet.getString("state");
+//        String col3 = resultSet.getString("phoneNum");
+//        String col4 = resultSet.getString("email");
+//        String col5 = resultSet.getString("taxId");
+//        String col6 = resultSet.getString("username");
+//        String col7 = resultSet.getString("password");
 
-        System.out.println(col1 + "\t" 
-          + col2 + "\t" 
-          + col3 + "\t"
-          + col4 + "\t"
-          + col5 + "\t"
-          + col6 + "\t"
-          + col7 + "\t"
-          );
+        ResultSetMetaData rsmd = resultSet.getMetaData();
+        int numColumns = rsmd.getColumnCount();
+        for (int i = 1; i <= numColumns; i++) {
+          System.out.println(rsmd.getColumnName(i) + " " + resultSet.getString(i));
+          System.out.print(", ");
+        }
+
+//        System.out.println(col1 + "\t"
+//          + col2 + "\t"
+//          + col3 + "\t"
+//          + col4 + "\t"
+//          + col5 + "\t"
+//          + col6 + "\t"
+//          + col7 + "\t"
+//          );
         // Perform other operations if needed
       }
       resultSet.close();
