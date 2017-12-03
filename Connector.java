@@ -4,9 +4,9 @@ public class Connector {
 
   public void connect {
     Config config = new Config();
-    String HOST = Config.HOST;
-    String USER = Config.USER;
-    String PWD = Config.PWD;
+    String HOST = Config.host;
+    String USER = Config.user;
+    String PWD = Config.pwd;
 
     try {
       Class.forName("com.mysql.jdbc.Driver");
