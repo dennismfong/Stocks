@@ -1,8 +1,9 @@
-import java.io.Console;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 
 public class TraderInterface {
+
+	private String name;
 
 	public TraderInterface() {
 
@@ -14,8 +15,9 @@ public class TraderInterface {
 	}
 
 	public boolean login(String username, String password) {
-		boolean success = false;
+		boolean success = true;
 		// Add in code to check if user is in the customer table
+		this.name = "Test User"; // Update it with the cname column from query
 		return success;
 	}
 
@@ -89,6 +91,22 @@ public class TraderInterface {
 			}
 
 			// Start of application logic
+			System.out.println("Welcome " + traderifc.name + " to your portal!");
+			System.out.println("Issue commands using the number key associated with your request");
+
+			System.out.println("\n\n"
+							+ "\n1.     Deposit"
+							+ "\n2.     Withdrawal"
+							+ "\n3.     Buy"
+							+ "\n4.     Sell"
+							+ "\n5.     Get market account balance"
+							+ "\n6.     Get stock account transaction history"
+							+ "\n7.     Get current price of a stock and actor profile"
+							+ "\n8.     Get specific movie information "
+							+ "\n9.     Get top movies information"
+							+ "\n10.    Get reviews for a movie"
+							+ "\n\n"
+			);
 		}
 	}
 }
