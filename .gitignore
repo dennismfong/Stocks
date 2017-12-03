@@ -1,6 +1,9 @@
 # Compiled class file
 *.class
 
+# Database config file
+Config.java
+
 # Log file
 *.log
 
