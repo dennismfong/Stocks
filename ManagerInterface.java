@@ -7,9 +7,26 @@ public class ManagerInterface {
 	}
 
 	public boolean login(String username, String password) {
-		boolean success = true;
-		// select * from Customer where Customer.username = username and Customer.password = password;
-		// select * from MarketAccount where MarketAccount.aid in (select aid from Account where Account.username = username);
+		Class.forName("com.mysql.jdbc.Driver");
+	  Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+
+	  Statement statement = connection.createStatement();
+
+	  String query = "select * from Customer where Customer.username = "+username+" and Customer.password = +"password;
+	  ResultSet resultSet = statement.executeQuery(query);
+
+	  if(resultSet.next())
+			boolean success = true;
+		else{
+			return false;
+		}
+		this.user.setUsername(resultSet.getString(6));
+		this.user.setName(resultSet.getString(1));
+		
+		String query = "select balance from MarketAccount where MarketAccount.aid in (select aid from Account where Account.username = "+username+")";
+		ResultSet resultSet = statement.executeQuery(query);
+
+		this.user.setBalance(resultSet.getFLoat(1));
 		return success;
 	}
 
