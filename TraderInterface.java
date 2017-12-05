@@ -2,12 +2,14 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 
 public class TraderInterface {
-
+/*
 	private String name;
 	private int aid;
 	private float balance; //market balance
-	private String username;
+	private String username;*/
 	
+	private User user;
+
 	public TraderInterface() {
 	}
 
@@ -117,21 +119,18 @@ public class TraderInterface {
 		Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 		Statement statement = connection.createStatement();
 		
-		String query = "select * from Account WHERE Account.username = "+this.username+" AND Account.aid IN (select aid from MarketAccount)";
+		String query = "select * from Account WHERE Account.username = "+this.user.getUsername()+" AND Account.aid IN (select aid from MarketAccount)";
 		ResultSet resultSet = statement.executeQuery(query);	
 		System.out.println("CURRENT BALANCE: "+resultSet.getInt(1));
 	}
 
 	public static void depositBalance(int money){
 		//UPDATE MarketAccount SET Balance = Balance + money WHERE aid = this.aid";
+		this.user.changeBalance(money);
+
 		Class.forName("com.mysql.jdbc.Driver");
 		Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 		Statement statement = connection.createStatement();
-		
-		String query = "select * from Account WHERE Account.username = "+this.username+" AND Account.aid IN (select aid from MarketAccount)";
-		ResultSet resultSet = statement.executeQuery(query);
-		resultSet.absolute(1);
-		resultSet.updateInt(2, resultSet.getInt(1)+money);
 
 		String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, "Deposit", date, this.aid)";
 		ResultSet resultSet = statement.executeQuery(query);
@@ -149,15 +148,10 @@ public class TraderInterface {
 		Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 		Statement statement = connection.createStatement();
 		
-		String query = "select * from Account WHERE Account.username = "+this.username+" AND Account.aid IN (select aid from MarketAccount)";
-		ResultSet resultSet = statement.executeQuery(query);
-		
-		if(balance < money)
+		if(this.user.getBalance() < money)
 			System.out.println("CANNOT WITHDRAW MONEY: INSUFFICIENT BALANCE");
 		else{
-
-			resultSet.absolute(1);
-			resultSet.updateInt(2, resultSet.getInt(1)-money);
+			this.user.changeBalance(-1 * money);
 
 			String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, "Withdrawal", date, this.aid)";
 			ResultSet resultSet = statement.executeQuery(query);
@@ -172,7 +166,7 @@ public class TraderInterface {
 	
 			//INSERT INTO MarketTransaction(tid, amount) 
 			//VALUES (####, money);
-			System.out.println("WITHDREW "+ balance + " DOLLARS.");
+			System.out.println("WITHDREW "+ money + " DOLLARS.");
 		}
 		statement.close();
     connection.close();
@@ -211,22 +205,16 @@ public class TraderInterface {
 	  String query = "select currentPrice, numStocks from Stock where Stock.key = "+key;
 	  ResultSet resultSet = statement.executeQuery(query);
 	  float currentPrice = resultSet.getFloat(1);
-		//select currentPrice, numStocks from Stock where Stock.key = key;
-		if(amount > resultSet.getInt(2)){
+	  //select currentPrice, numStocks from Stock where Stock.key = key;
+	  if(amount > resultSet.getInt(2)){
 			System.out.println("CANNOT PURCHASE STOCK: NOT ENOUGH STOCKS REMAINING");
 		}
-		else if(this.balance < amount*resultSet.getFloat(1)+20){
+		else if(this.user.getBalance() < amount*resultSet.getFloat(1)+20){
 			System.out.println("CANNOT PURCHASE STOCK: NOT ENOUGH MONEY IN BALANCE");
 		}
 		else{
 			resultSet.updateInt(2, resultSet.getInt(2)-amount);
-			this.balance -= amount*currentPrice+20;
-
-			String query = "select * from Account WHERE Account.username = "+this.username+" AND Account.aid IN (select aid from MarketAccount)";
-			ResultSet resultSet = statement.executeQuery(query);
-
-			resultSet.absolute(1);
-			resultSet.updateInt(2, this.balance);
+			this.user.changeBalance((amount*resultSet.getFloat(1)+20) *-1);
 
 			String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, 'Stock purchase', date, this.aid)";
 			ResultSet resultSet = statement.executeQuery(query);
@@ -255,15 +243,8 @@ public class TraderInterface {
 	  float currentPrice = resultSet.getFloat(1);
 		//select currentPrice, numStocks from Stock where Stock.key = key;
 		resultSet.updateInt(2, resultSet.getInt(2)+amount);
-		this.balance += amount*currentPrice-20;
-
-
-		String query = "select * from Account WHERE Account.username = "+this.username+" AND Account.aid IN (select aid from MarketAccount)";
-		ResultSet resultSet = statement.executeQuery(query);
-
-		resultSet.absolute(1);
-		resultSet.updateInt(2, this.balance);
-
+		
+		this.user.changeBalance((amount*resultSet.getFloat(1)+20) *-1);
 
 		String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, 'Stock sold', date, this.aid)";
 		ResultSet resultSet = statement.executeQuery(query);
