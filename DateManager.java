@@ -25,14 +25,13 @@ public class DateManager {
       sb.append(br.readLine()).append("/");
       System.out.println("Enter in the month (ie. 02)");
       sb.append(br.readLine()).append("/");
-      System.out.println("Enter in the day (ie. 24");
-      sb.append(br.readLine()).append("/");
+      System.out.println("Enter in the day (ie. 24)");
 
       Date date = new Date();
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
       date = sdf.parse(sb.toString());
       String dateStr = sdf.format(date);
-      
+
       System.out.println("Change the date to " + dateStr + "? (y or n)");
       String answer = br.readLine();
       if (answer.toLowerCase().contains("y")) {
