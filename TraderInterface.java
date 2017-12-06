@@ -61,9 +61,9 @@ public class TraderInterface {
         Statement statement = connection.createStatement();
         String query = "select * from Customer where username = \"" + username + "\"";
         ResultSet resultSet = statement.executeQuery(query);
-        if (!resultSet.isBeforeFirst()) {
+        if (resultSet.isBeforeFirst()) {
           System.out.println("Username already exists, please select a new username");
-          break;
+          continue;
         }
       }
       System.out.println("Enter in your desired password");
