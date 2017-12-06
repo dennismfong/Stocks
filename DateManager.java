@@ -6,9 +6,9 @@ import java.util.Date;
 
 public class DateManager {
 
-  String HOST = Config.host;
-  String USER = Config.user;
-  String PWD = Config.pwd;
+  public String HOST = Config.host;
+  public String USER = Config.user;
+  public String PWD = Config.pwd;
 
   public DateManager() {
 
@@ -19,21 +19,20 @@ public class DateManager {
     int year, month, day;
 
     try {
+      StringBuilder sb = new StringBuilder();
       System.out.println("Enter in the year (ie. 2000)");
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-      year = Integer.parseInt(br.readLine());
-      System.out.println("Enter in the month (ie. 02");
-      month = Integer.parseInt(br.readLine());
-      System.out.println("Enter in the day (ie. 24");
-      day = Integer.parseInt(br.readLine());
+      sb.append(br.readLine()).append("-");
+      System.out.println("Enter in the month (ie. 02)");
+      sb.append(br.readLine()).append("-");
+      System.out.println("Enter in the day (ie. 24)");
+      sb.append(br.readLine());
 
       Date date = new Date();
-      date.setYear(year);
-      date.setMonth(month);
-      date.setDate(day);
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
+      date = sdf.parse(sb.toString());
       String dateStr = sdf.format(date);
+
       System.out.println("Change the date to " + dateStr + "? (y or n)");
       String answer = br.readLine();
       if (answer.toLowerCase().contains("y")) {
@@ -43,8 +42,11 @@ public class DateManager {
                   dateManager.USER,
                   dateManager.PWD);
           Statement statement = connection.createStatement();
-          String query = "delete from MarketDate";
-          ResultSet resultSet = statement.executeQuery(query);
+          String update = "delete from MarketDate";
+          statement.executeUpdate(update);
+
+          String query = "insert into MarketDate(date) values(TO_DATE(\'" + dateStr + "\', \'yyyy-MM-dd\'))";
+          statement.executeUpdate(query);
 
         } catch (Exception e) {
           System.err.println(e);
