@@ -45,7 +45,7 @@ public class DateManager {
           String update = "delete from MarketDate";
           statement.executeUpdate(update);
 
-          String query = "insert into MarketDate values (" + date + ")";
+          String query = "insert into MarketDate values(" + date + ")";
           statement.executeUpdate(query);
 
         } catch (Exception e) {
