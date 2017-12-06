@@ -191,10 +191,10 @@ public class TraderInterface {
       Statement statement = connection.createStatement();
 
       String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, \" Deposit \", date, this.aid)";
-      ResultSet resultSet = statement.executeQuery(query);
+      ResultSet resultSet = statement.executeUpdate(query);
 
       String query_2 = "INSERT INTO MarketTransaction(tid, amount) VALUES (####, " + money + ")";
-      ResultSet resultSet_2 = statement.executeQuery(query);
+      ResultSet resultSet_2 = statement.executeUpdate(query);
 
       statement.close();
       connection.close();
@@ -216,10 +216,10 @@ public class TraderInterface {
         this.user.setBalance(-1 * money);
 
         String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, \" Withdrawal \", date, this.aid)";
-        ResultSet resultSet = statement.executeQuery(query);
+        ResultSet resultSet = statement.executeUpdate(query);
 
         String query_2 = "INSERT INTO MarketTransaction(tid, amount) VALUES (####, " + money + ")";
-        ResultSet resultSet_2 = statement.executeQuery(query);
+        ResultSet resultSet_2 = statement.executeUpdate(query);
 
         //UPDATE MarketAccount SET Balance = Balance - money WHERe aid = this.aid;
 
@@ -286,10 +286,10 @@ public class TraderInterface {
         this.user.setBalance((amount * resultSet.getFloat(1) + 20) * -1);
 
         String query_2 = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, 'Stock purchase', date, this.aid)";
-        ResultSet resultSet_2 = statement.executeQuery(query);
+        ResultSet resultSet_2 = statement.executeUpdate(query);
 
         String query_3 = "INSERT INTO StockTransaction(tid, quantity, price, symbol) VALUES ####, " + amount + ", " + amount * currentPrice + ", " + key + ")";
-        ResultSet resultSet_3 = statement.executeQuery(query);
+        ResultSet resultSet_3 = statement.executeUpdate(query);
         //UPDATE MarketAccount SET Balance = balance WHERE aid = this.aid;
         //UPDATE Stock SET numStocks = numStocks - amount WHERE symbol = key;
 
@@ -320,10 +320,10 @@ public class TraderInterface {
       this.user.setBalance((amount * resultSet.getFloat(1) + 20) * -1);
 
       String query_2 = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, 'Stock sold', date, this.aid)";
-      ResultSet resultSet_2 = statement.executeQuery(query);
+      ResultSet resultSet_2 = statement.executeUpdate(query);
 
       String query_3 = "INSERT INTO StockTransaction(tid, quantity, price, symbol) VALUES ####, " + amount + ", " + amount * currentPrice + ", " + key + ")";
-      ResultSet resultSet_3 = statement.executeQuery(query);
+      ResultSet resultSet_3 = statement.executeUpdate(query);
       //select currentPrice, numStocks from Stock where Stock.key = key;
       //UPDATE MarketAccount SET Balance = balance WHERE aid = this.aid;
       //UPDATE Stock SET numStocks = numStocks + amount WHERE symbol = key;

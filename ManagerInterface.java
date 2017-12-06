@@ -37,6 +37,8 @@ public class ManagerInterface {
 
 			this.user.setBalance(resultSet.getFloat(1));
 			return success;
+			statement.close();
+			connection.close();
 		} catch (Exception e){
 			System.err.println(e);
 		}
@@ -125,7 +127,7 @@ public class ManagerInterface {
 			ResultSet resultSet = statement.executeQuery(query);
 
 			while (resultSet.next()) {
-				resultSet.updateFloat(1, resultSet.getFloat(1) * resultSet.getFloat(2));
+				resultSet.updateFloat(1, resultSet.getFloat(1) * (1+resultSet.getFloat(2)));
 				resultSet.updateRow();
 			}
 			statement.close();
