@@ -4,7 +4,7 @@ public class User{
 	private String username;
 	private float balance;
 	private String name;
-	private int ssn;
+	private String ssn;
 	private String HOST;
 	private String USER;
 	private String PWD;
@@ -45,4 +45,19 @@ public class User{
 	public String getName(){ return this.name; }
 
 	public String getUsername(){ return this.username; }
+
+	public void setInfo(String username) {
+    try {
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+      Statement statement = connection.createStatement();
+      String query = "select * from Customer where username = \"" + username+ "\"";
+      ResultSet resultSet = statement.executeQuery(query);
+
+      this.name = resultSet.getString(1);
+      this.ssn = resultSet.getString(7);
+
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+  }
 }

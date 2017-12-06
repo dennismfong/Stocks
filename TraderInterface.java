@@ -49,6 +49,7 @@ public class TraderInterface {
               + " AND " + "password = \"" + password + "\"";
       ResultSet resultSet = statement.executeQuery(query);
       if (resultSet.isBeforeFirst()) {
+        // Matching row in the database
         return true;
       }
       else {
@@ -164,7 +165,8 @@ public class TraderInterface {
           if (!loggedIn) {
             System.out.println("Sorry, that user was not found, please try again");
           } else {
-            // set user.name, user.variables...
+            traderifc.user.setUsername(username);
+            traderifc.user.setInfo(username);
             break;
           }
         }
