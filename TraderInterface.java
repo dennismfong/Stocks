@@ -65,6 +65,9 @@ public class TraderInterface {
           System.out.println("Username already exists, please select a new username");
           continue;
         }
+        else {
+          break;
+        }
       }
       System.out.println("Enter in your desired password");
       String password = br.readLine();
