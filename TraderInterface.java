@@ -4,294 +4,328 @@ import java.sql.*;
 
 public class TraderInterface {
 /*
-	private String name;
+  private String name;
 	private int aid;
 	private float balance; //market balance
 	private String username;*/
-	
-	private User user;
-	private String HOST = Config.host;
-	private String USER = Config.user;
-	private String PWD = Config.pwd;
 
-	public TraderInterface() {
-		user = new User();
-	}
+  private User user;
+  private String HOST = Config.host;
+  private String USER = Config.user;
+  private String PWD = Config.pwd;
 
-	public void displayGreeting() {
-		System.out.println("Welcome to the Trader Interface of StarsRUs");
-		System.out.println("Issue commands using the number key associated with your request");
-	}
+  public TraderInterface() {
+    user = new User();
+  }
 
-	public boolean login(String username, String password) {
-		boolean success = true;
-		// Add in code to check if user is in the customer table
-		user.setName("Test User"); // Update it with the cname column from query
-		return success;
-	}
+  public void displayGreeting() {
+    System.out.println("Welcome to the Trader Interface of StarsRUs");
+    System.out.println("Issue commands using the number key associated with your request");
+  }
 
-	public boolean registerUser() {
-		boolean registered = true; // Set to true for debugging purposes
-		System.out.println("Welcome to the register portal of StarsRUs");
-		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-			System.out.println("Enter in your desired username");
-			String username = br.readLine();
+  public boolean login(String username, String password) {
+    boolean success = true;
+    // Add in code to check if user is in the customer table
+    user.setName("Test User"); // Update it with the cname column from query
+    return success;
+  }
+
+  public boolean registerUser() {
+    boolean registered = true; // Set to true for debugging purposes
+    System.out.println("Welcome to the register portal of StarsRUs");
+    try {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+      System.out.println("Enter in your desired username");
+      String username = br.readLine();
 //			Only works on CSIL and not IntelliJ
 //			Console console = System.console();
 //			String password = new String(console.readPassword("Enter in your desired password"));
-			System.out.println("Enter in your desired password");
-			String password = br.readLine();
+      System.out.println("Enter in your desired password");
+      String password = br.readLine();
 
-			// Add code to create a new row in the Customer table
+      // Add code to create a new row in the Customer table
 
-			return registered;
+      return registered;
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	public static void main(String[] args) {
-		TraderInterface traderifc = new TraderInterface();
+  public static void main(String[] args) {
+    TraderInterface traderifc = new TraderInterface();
 
-		boolean loggedIn = false;
-		boolean exit = false;
+    boolean loggedIn = false;
+    boolean exit = false;
 
-		traderifc.displayGreeting();
-		while (!exit) {
-			try {
-				BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-				System.out.println("Are you a registered user?");
-				System.out.println("1.	yes");
-				System.out.println("2.	no");
-				System.out.println("3.	exit");
+    traderifc.displayGreeting();
+    while (!exit) {
+      try {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Are you a registered user?");
+        System.out.println("1.	yes");
+        System.out.println("2.	no");
+        System.out.println("3.	exit");
 
-				String answer = reader.readLine();
-				if ("2".equals(answer)) {
-					if (!traderifc.registerUser()) {
-						continue;
-					}
-				}
-				else if ("3".equals(answer)) {
-					break;
-				}
+        String answer = reader.readLine();
+        if ("2".equals(answer)) {
+          if (!traderifc.registerUser()) {
+            continue;
+          }
+        } else if ("3".equals(answer)) {
+          break;
+        }
 
-				while (!loggedIn) {
-					System.out.println("Please enter in your username or type register to make a new account");
-					String username = reader.readLine();
-					if ("register".equals(username.toLowerCase())) {
-						break;
-					}
-					System.out.println("Please enter in your password");
-					String password = reader.readLine();
+        while (!loggedIn) {
+          System.out.println("Please enter in your username or type register to make a new account");
+          String username = reader.readLine();
+          if ("register".equals(username.toLowerCase())) {
+            break;
+          }
+          System.out.println("Please enter in your password");
+          String password = reader.readLine();
 
-					loggedIn = traderifc.login(username, password);
-					if (!loggedIn) {
-						System.out.println("Sorry, that user was not found, please try again");
-					} else {
-						break;
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+          loggedIn = traderifc.login(username, password);
+          if (!loggedIn) {
+            System.out.println("Sorry, that user was not found, please try again");
+          } else {
+            break;
+          }
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
 
-			// Start of application logic
-			System.out.println("Welcome " + traderifc.user.getName() + " to your portal!");
-			System.out.println("Issue commands using the number key associated with your request");
+      boolean exitPortal = false;
+      while (!exitPortal) {
+        // Start of application logic
+        System.out.println("Welcome " + traderifc.user.getName() + " to your portal!");
+        System.out.println("Issue commands using the number key associated with your request");
 
-			System.out.println("\n\n"
-							+ "\n1.     Deposit"
-							+ "\n2.     Withdrawal"
-							+ "\n3.     Buy"
-							+ "\n4.     Sell"
-							+ "\n5.     Get market account balance"
-							+ "\n6.     Get stock account transaction history"
-							+ "\n7.     Get current price of a stock and actor profile"
-							+ "\n8.     Get specific movie information "
-							+ "\n9.     Get top movies information"
-							+ "\n10.    Get reviews for a movie"
-							+ "\n\n"
-			);
-		}
-	}
+        System.out.println("\n\n"
+                + "\n1.     Deposit"
+                + "\n2.     Withdrawal"
+                + "\n3.     Buy"
+                + "\n4.     Sell"
+                + "\n5.     Get market account balance"
+                + "\n6.     Get stock account transaction history"
+                + "\n7.     Get current price of a stock and actor profile"
+                + "\n8.     Get specific movie information "
+                + "\n9.     Get top movies information"
+                + "\n10.    Get reviews for a movie"
+                + "\n11.    exit"
+                + "\n\n"
+        );
 
-	public void showBalance(){
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
-			Statement statement = connection.createStatement();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        try {
+          int answer = Integer.parseInt(reader.readLine());
+          switch (answer) {
+            case 1:
+              break;
+            case 2:
+              break;
+            case 3:
+              break;
+            case 4:
+              break;
+            case 5:
+              break;
+            case 6:
+              break;
+            case 7:
+              break;
+            case 8:
+              break;
+            case 9:
+              break;
+            case 10:
+              break;
+            case 11:
+              exitPortal = true;
+              break;
+          }
+        } catch (Exception e) {
+          System.err.println(e);
+        }
+      }
+    }
+  }
 
-			String query = "select * from Account WHERE Account.username = " + this.user.getUsername() + " AND Account.aid IN (select aid from MarketAccount)";
-			ResultSet resultSet = statement.executeQuery(query);
-			System.out.println("CURRENT BALANCE: " + resultSet.getInt(1));
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-	}
+  public void showBalance() {
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+      Statement statement = connection.createStatement();
 
-	public void depositBalance(int money){
-		//UPDATE MarketAccount SET Balance = Balance + money WHERE aid = this.aid";
-		this.user.setBalance(money);
+      String query = "select * from Account WHERE Account.username = " + this.user.getUsername() + " AND Account.aid IN (select aid from MarketAccount)";
+      ResultSet resultSet = statement.executeQuery(query);
+      System.out.println("CURRENT BALANCE: " + resultSet.getInt(1));
+    } catch (Exception e) {
+      System.err.println(e);
+    }
+  }
 
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
-			Statement statement = connection.createStatement();
+  public void depositBalance(int money) {
+    //UPDATE MarketAccount SET Balance = Balance + money WHERE aid = this.aid";
+    this.user.setBalance(money);
 
-			String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, \" Deposit \", date, this.aid)";
-			ResultSet resultSet = statement.executeQuery(query);
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+      Statement statement = connection.createStatement();
 
-			String query_2 = "INSERT INTO MarketTransaction(tid, amount) VALUES (####, " + money + ")";
-			ResultSet resultSet_2= statement.executeQuery(query);
+      String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, \" Deposit \", date, this.aid)";
+      ResultSet resultSet = statement.executeQuery(query);
 
-			statement.close();
-			connection.close();
-			System.out.println("DEPOSITED " + money + " DOLLARS.");
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-	}
+      String query_2 = "INSERT INTO MarketTransaction(tid, amount) VALUES (####, " + money + ")";
+      ResultSet resultSet_2 = statement.executeQuery(query);
 
-	public void withdrawBalance(int money){
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
-			Statement statement = connection.createStatement();
+      statement.close();
+      connection.close();
+      System.out.println("DEPOSITED " + money + " DOLLARS.");
+    } catch (Exception e) {
+      System.err.println(e);
+    }
+  }
 
-			if (this.user.getBalance() < money)
-				System.out.println("CANNOT WITHDRAW MONEY: INSUFFICIENT BALANCE");
-			else {
-				this.user.setBalance(-1 * money);
+  public void withdrawBalance(int money) {
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+      Statement statement = connection.createStatement();
 
-				String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, \" Withdrawal \", date, this.aid)";
-				ResultSet resultSet = statement.executeQuery(query);
+      if (this.user.getBalance() < money)
+        System.out.println("CANNOT WITHDRAW MONEY: INSUFFICIENT BALANCE");
+      else {
+        this.user.setBalance(-1 * money);
 
-				String query_2 = "INSERT INTO MarketTransaction(tid, amount) VALUES (####, " + money + ")";
-				ResultSet resultSet_2 = statement.executeQuery(query);
+        String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, \" Withdrawal \", date, this.aid)";
+        ResultSet resultSet = statement.executeQuery(query);
 
-				//UPDATE MarketAccount SET Balance = Balance - money WHERe aid = this.aid;
+        String query_2 = "INSERT INTO MarketTransaction(tid, amount) VALUES (####, " + money + ")";
+        ResultSet resultSet_2 = statement.executeQuery(query);
 
-				//INSERT INTO Transaction(tid, type, date, aid)
-				//VALUES (####, "Withdrawal", date, this.aid)
+        //UPDATE MarketAccount SET Balance = Balance - money WHERe aid = this.aid;
 
-				//INSERT INTO MarketTransaction(tid, amount)
-				//VALUES (####, money);
-				System.out.println("WITHDREW " + money + " DOLLARS.");
-			}
-			statement.close();
-			connection.close();
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-	}
-	public void listStockDetails(String stock){
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+        //INSERT INTO Transaction(tid, type, date, aid)
+        //VALUES (####, "Withdrawal", date, this.aid)
 
-			Statement statement = connection.createStatement();
+        //INSERT INTO MarketTransaction(tid, amount)
+        //VALUES (####, money);
+        System.out.println("WITHDREW " + money + " DOLLARS.");
+      }
+      statement.close();
+      connection.close();
+    } catch (Exception e) {
+      System.err.println(e);
+    }
+  }
 
-			String query = "select currentPrice from Stock where Stock.symbol = " + stock;
-			ResultSet resultSet = statement.executeQuery(query);
-			float currentPrice = resultSet.getFloat(1);
-			System.out.println("CURRENT PRICE FOR STOCK " + stock + ": " + currentPrice);
+  public void listStockDetails(String stock) {
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 
-			//select * from ActorDirector where ActorDirector.symbol = stock;
-			String query_2 = "select * from ActorDirector where ActorDirector.symbol = " + stock;
-			ResultSet resultSet_2 = statement.executeQuery(query);
-			System.out.println("STOCK DETAILS");
-			ResultSetMetaData rsmd = resultSet.getMetaData();
-			int numColumns = rsmd.getColumnCount();
-			for (int i = 1; i <= numColumns; i++) {
-				System.out.println(rsmd.getColumnName(i) + " " + resultSet.getString(i));
-				System.out.print(", ");
-			}
-			statement.close();
-			connection.close();
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-	}
+      Statement statement = connection.createStatement();
 
-	public void buyStock(String key, int amount){
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+      String query = "select currentPrice from Stock where Stock.symbol = " + stock;
+      ResultSet resultSet = statement.executeQuery(query);
+      float currentPrice = resultSet.getFloat(1);
+      System.out.println("CURRENT PRICE FOR STOCK " + stock + ": " + currentPrice);
 
-			Statement statement = connection.createStatement();
+      //select * from ActorDirector where ActorDirector.symbol = stock;
+      String query_2 = "select * from ActorDirector where ActorDirector.symbol = " + stock;
+      ResultSet resultSet_2 = statement.executeQuery(query);
+      System.out.println("STOCK DETAILS");
+      ResultSetMetaData rsmd = resultSet.getMetaData();
+      int numColumns = rsmd.getColumnCount();
+      for (int i = 1; i <= numColumns; i++) {
+        System.out.println(rsmd.getColumnName(i) + " " + resultSet.getString(i));
+        System.out.print(", ");
+      }
+      statement.close();
+      connection.close();
+    } catch (Exception e) {
+      System.err.println(e);
+    }
+  }
 
-			String query = "select currentPrice, numStocks from Stock where Stock.key = "+key;
-			ResultSet resultSet = statement.executeQuery(query);
-			float currentPrice = resultSet.getFloat(1);
-			//select currentPrice, numStocks from Stock where Stock.key = key;
-			if(amount > resultSet.getInt(2)){
-				System.out.println("CANNOT PURCHASE STOCK: NOT ENOUGH STOCKS REMAINING");
-			}
-			else if(this.user.getBalance() < amount*resultSet.getFloat(1)+20){
-				System.out.println("CANNOT PURCHASE STOCK: NOT ENOUGH MONEY IN BALANCE");
-			}
-			else {
-				resultSet.updateInt(2, resultSet.getInt(2) - amount);
-				this.user.setBalance((amount * resultSet.getFloat(1) + 20) * -1);
+  public void buyStock(String key, int amount) {
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 
-				String query_2 = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, 'Stock purchase', date, this.aid)";
-				ResultSet resultSet_2 = statement.executeQuery(query);
+      Statement statement = connection.createStatement();
 
-				String query_3 = "INSERT INTO StockTransaction(tid, quantity, price, symbol) VALUES ####, " + amount + ", " + amount * currentPrice + ", " + key + ")";
-				ResultSet resultSet_3 = statement.executeQuery(query);
-				//UPDATE MarketAccount SET Balance = balance WHERE aid = this.aid;
-				//UPDATE Stock SET numStocks = numStocks - amount WHERE symbol = key;
+      String query = "select currentPrice, numStocks from Stock where Stock.key = " + key;
+      ResultSet resultSet = statement.executeQuery(query);
+      float currentPrice = resultSet.getFloat(1);
+      //select currentPrice, numStocks from Stock where Stock.key = key;
+      if (amount > resultSet.getInt(2)) {
+        System.out.println("CANNOT PURCHASE STOCK: NOT ENOUGH STOCKS REMAINING");
+      } else if (this.user.getBalance() < amount * resultSet.getFloat(1) + 20) {
+        System.out.println("CANNOT PURCHASE STOCK: NOT ENOUGH MONEY IN BALANCE");
+      } else {
+        resultSet.updateInt(2, resultSet.getInt(2) - amount);
+        this.user.setBalance((amount * resultSet.getFloat(1) + 20) * -1);
 
-				//INSERT INTO Transactions(tid, type, date, aid)
-				//VALUES (####, "Stock purchase", date, this.aid)
+        String query_2 = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, 'Stock purchase', date, this.aid)";
+        ResultSet resultSet_2 = statement.executeQuery(query);
 
-				//INSERT INTO StockTransaction(tid, quantity, price, symbol)
-				//VALUES (####, amount, amount*currentPrice, key);
-			}
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-	}
+        String query_3 = "INSERT INTO StockTransaction(tid, quantity, price, symbol) VALUES ####, " + amount + ", " + amount * currentPrice + ", " + key + ")";
+        ResultSet resultSet_3 = statement.executeQuery(query);
+        //UPDATE MarketAccount SET Balance = balance WHERE aid = this.aid;
+        //UPDATE Stock SET numStocks = numStocks - amount WHERE symbol = key;
 
-	public void sellStock(String key, int amount, float ogprice){
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+        //INSERT INTO Transactions(tid, type, date, aid)
+        //VALUES (####, "Stock purchase", date, this.aid)
 
-			Statement statement = connection.createStatement();
+        //INSERT INTO StockTransaction(tid, quantity, price, symbol)
+        //VALUES (####, amount, amount*currentPrice, key);
+      }
+    } catch (Exception e) {
+      System.err.println(e);
+    }
+  }
 
-			String query = "select currentPrice, numStocks from Stock where Stock.key = " + key;
-			ResultSet resultSet = statement.executeQuery(query);
-			float currentPrice = resultSet.getFloat(1);
-			//select currentPrice, numStocks from Stock where Stock.key = key;
-			resultSet.updateInt(2, resultSet.getInt(2) + amount);
+  public void sellStock(String key, int amount, float ogprice) {
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 
-			this.user.setBalance((amount * resultSet.getFloat(1) + 20) * -1);
+      Statement statement = connection.createStatement();
 
-			String query_2 = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, 'Stock sold', date, this.aid)";
-			ResultSet resultSet_2 = statement.executeQuery(query);
+      String query = "select currentPrice, numStocks from Stock where Stock.key = " + key;
+      ResultSet resultSet = statement.executeQuery(query);
+      float currentPrice = resultSet.getFloat(1);
+      //select currentPrice, numStocks from Stock where Stock.key = key;
+      resultSet.updateInt(2, resultSet.getInt(2) + amount);
 
-			String query_3 = "INSERT INTO StockTransaction(tid, quantity, price, symbol) VALUES ####, " + amount + ", " + amount * currentPrice + ", " + key + ")";
-			ResultSet resultSet_3 = statement.executeQuery(query);
-			//select currentPrice, numStocks from Stock where Stock.key = key;
-			//UPDATE MarketAccount SET Balance = balance WHERE aid = this.aid;
-			//UPDATE Stock SET numStocks = numStocks + amount WHERE symbol = key;
+      this.user.setBalance((amount * resultSet.getFloat(1) + 20) * -1);
 
-			//INSERT INTO Transactions(tid, type, date, aid)
-			//VALUES (####, "Stock sold", date, this.aid)
+      String query_2 = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, 'Stock sold', date, this.aid)";
+      ResultSet resultSet_2 = statement.executeQuery(query);
 
-			//INSERT INTO StockTransaction(tid, quantity, price, symbol)
-			//VALUES (####, amount, amount*currentPrice, key);
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-	}
+      String query_3 = "INSERT INTO StockTransaction(tid, quantity, price, symbol) VALUES ####, " + amount + ", " + amount * currentPrice + ", " + key + ")";
+      ResultSet resultSet_3 = statement.executeQuery(query);
+      //select currentPrice, numStocks from Stock where Stock.key = key;
+      //UPDATE MarketAccount SET Balance = balance WHERE aid = this.aid;
+      //UPDATE Stock SET numStocks = numStocks + amount WHERE symbol = key;
 
-	public void displayMovieDetails(String movieTitle){
+      //INSERT INTO Transactions(tid, type, date, aid)
+      //VALUES (####, "Stock sold", date, this.aid)
 
-	}
+      //INSERT INTO StockTransaction(tid, quantity, price, symbol)
+      //VALUES (####, amount, amount*currentPrice, key);
+    } catch (Exception e) {
+      System.err.println(e);
+    }
+  }
+
+  public void displayMovieDetails(String movieTitle) {
+
+  }
 }
