@@ -1,5 +1,6 @@
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
+import java.sql.*;
 
 public class TraderInterface {
 /*
@@ -9,6 +10,9 @@ public class TraderInterface {
 	private String username;*/
 	
 	private User user;
+	private String HOST = Config.host;
+	private String USER = Config.user;
+	private String PWD = Config.pwd;
 
 	public TraderInterface() {
 	}
@@ -115,151 +119,175 @@ public class TraderInterface {
 	}
 
 	public void showBalance(){
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection connection = DriverManager.getConnection(HOST, USER, PWD);
-		Statement statement = connection.createStatement();
-		
-		String query = "select * from Account WHERE Account.username = "+this.user.getUsername()+" AND Account.aid IN (select aid from MarketAccount)";
-		ResultSet resultSet = statement.executeQuery(query);	
-		System.out.println("CURRENT BALANCE: "+resultSet.getInt(1));
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+			Statement statement = connection.createStatement();
+
+			String query = "select * from Account WHERE Account.username = " + this.user.getUsername() + " AND Account.aid IN (select aid from MarketAccount)";
+			ResultSet resultSet = statement.executeQuery(query);
+			System.out.println("CURRENT BALANCE: " + resultSet.getInt(1));
+		} catch (Exception e) {
+			System.err.println(e);
+		}
 	}
 
 	public void depositBalance(int money){
 		//UPDATE MarketAccount SET Balance = Balance + money WHERE aid = this.aid";
-		this.user.changeBalance(money);
+		this.user.setBalance(money);
 
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection connection = DriverManager.getConnection(HOST, USER, PWD);
-		Statement statement = connection.createStatement();
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+			Statement statement = connection.createStatement();
 
-		String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, "Deposit", date, this.aid)";
-		ResultSet resultSet = statement.executeQuery(query);
+			String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, \" Deposit \", date, this.aid)";
+			ResultSet resultSet = statement.executeQuery(query);
 
-		String query = "INSERT INTO MarketTransaction(tid, amount) VALUES (####, "+money+")";
-		ResultSet resultSet = statement.executeQuery(query);
+			String query_2 = "INSERT INTO MarketTransaction(tid, amount) VALUES (####, " + money + ")";
+			ResultSet resultSet_2= statement.executeQuery(query);
 
-		statement.close();
-		connection.close();
-    System.out.println("DEPOSITED "+ money+ " DOLLARS.");
+			statement.close();
+			connection.close();
+			System.out.println("DEPOSITED " + money + " DOLLARS.");
+		} catch (Exception e) {
+			System.err.println(e);
+		}
 	}
 
 	public void withdrawBalance(int money){
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection connection = DriverManager.getConnection(HOST, USER, PWD);
-		Statement statement = connection.createStatement();
-		
-		if(this.user.getBalance() < money)
-			System.out.println("CANNOT WITHDRAW MONEY: INSUFFICIENT BALANCE");
-		else{
-			this.user.changeBalance(-1 * money);
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+			Statement statement = connection.createStatement();
 
-			String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, "Withdrawal", date, this.aid)";
-			ResultSet resultSet = statement.executeQuery(query);
+			if (this.user.getBalance() < money)
+				System.out.println("CANNOT WITHDRAW MONEY: INSUFFICIENT BALANCE");
+			else {
+				this.user.setBalance(-1 * money);
 
-			String query = "INSERT INTO MarketTransaction(tid, amount) VALUES (####, "+money+")";
-			ResultSet resultSet = statement.executeQuery(query);
+				String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, \" Withdrawal \", date, this.aid)";
+				ResultSet resultSet = statement.executeQuery(query);
 
-			//UPDATE MarketAccount SET Balance = Balance - money WHERe aid = this.aid;
-	
-			//INSERT INTO Transaction(tid, type, date, aid) 
-			//VALUES (####, "Withdrawal", date, this.aid)
-	
-			//INSERT INTO MarketTransaction(tid, amount) 
-			//VALUES (####, money);
-			System.out.println("WITHDREW "+ money + " DOLLARS.");
+				String query_2 = "INSERT INTO MarketTransaction(tid, amount) VALUES (####, " + money + ")";
+				ResultSet resultSet_2 = statement.executeQuery(query);
+
+				//UPDATE MarketAccount SET Balance = Balance - money WHERe aid = this.aid;
+
+				//INSERT INTO Transaction(tid, type, date, aid)
+				//VALUES (####, "Withdrawal", date, this.aid)
+
+				//INSERT INTO MarketTransaction(tid, amount)
+				//VALUES (####, money);
+				System.out.println("WITHDREW " + money + " DOLLARS.");
+			}
+			statement.close();
+			connection.close();
+		} catch (Exception e) {
+			System.err.println(e);
 		}
-		statement.close();
-    connection.close();
 	}
 	public void listStockDetails(String stock){
-	  Class.forName("com.mysql.jdbc.Driver");
-	  Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 
-	  Statement statement = connection.createStatement();
+			Statement statement = connection.createStatement();
 
-	  String query = "select currentPrice from Stock where Stock.symbol = "+stock;
-	  ResultSet resultSet = statement.executeQuery(query);
-	  float currentPrice = resultSet.getFloat(1);
-		System.out.println("CURRENT PRICE FOR STOCK "+stock+": "+currentPrice);
-		
-		//select * from ActorDirector where ActorDirector.symbol = stock;
-		String query = "select * from ActorDirector where ActorDirector.symbol = "+stock;
-		ResultSet resultSet = statement.executeQuery(query);
-		System.out.println("STOCK DETAILS");
-		ResultSetMetaData rsmd = resultSet.getMetaData();
-		int numColumns = rsmd.getColumnCount();
-		for (int i = 1; i <= numColumns; i++) {
-			System.out.println(rsmd.getColumnName(i) + " " + resultSet.getString(i));
-			System.out.print(", ");
+			String query = "select currentPrice from Stock where Stock.symbol = " + stock;
+			ResultSet resultSet = statement.executeQuery(query);
+			float currentPrice = resultSet.getFloat(1);
+			System.out.println("CURRENT PRICE FOR STOCK " + stock + ": " + currentPrice);
+
+			//select * from ActorDirector where ActorDirector.symbol = stock;
+			String query_2 = "select * from ActorDirector where ActorDirector.symbol = " + stock;
+			ResultSet resultSet_2 = statement.executeQuery(query);
+			System.out.println("STOCK DETAILS");
+			ResultSetMetaData rsmd = resultSet.getMetaData();
+			int numColumns = rsmd.getColumnCount();
+			for (int i = 1; i <= numColumns; i++) {
+				System.out.println(rsmd.getColumnName(i) + " " + resultSet.getString(i));
+				System.out.print(", ");
+			}
+			statement.close();
+			connection.close();
+		} catch (Exception e) {
+			System.err.println(e);
 		}
-	  statement.close();
-	  connection.close();
 	}
 
 	public void buyStock(String key, int amount){
-		Class.forName("com.mysql.jdbc.Driver");
-	  Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 
-	  Statement statement = connection.createStatement();
+			Statement statement = connection.createStatement();
 
-	  String query = "select currentPrice, numStocks from Stock where Stock.key = "+key;
-	  ResultSet resultSet = statement.executeQuery(query);
-	  float currentPrice = resultSet.getFloat(1);
-	  //select currentPrice, numStocks from Stock where Stock.key = key;
-	  if(amount > resultSet.getInt(2)){
-			System.out.println("CANNOT PURCHASE STOCK: NOT ENOUGH STOCKS REMAINING");
-		}
-		else if(this.user.getBalance() < amount*resultSet.getFloat(1)+20){
-			System.out.println("CANNOT PURCHASE STOCK: NOT ENOUGH MONEY IN BALANCE");
-		}
-		else{
-			resultSet.updateInt(2, resultSet.getInt(2)-amount);
-			this.user.changeBalance((amount*resultSet.getFloat(1)+20) *-1);
-
-			String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, 'Stock purchase', date, this.aid)";
+			String query = "select currentPrice, numStocks from Stock where Stock.key = "+key;
 			ResultSet resultSet = statement.executeQuery(query);
+			float currentPrice = resultSet.getFloat(1);
+			//select currentPrice, numStocks from Stock where Stock.key = key;
+			if(amount > resultSet.getInt(2)){
+				System.out.println("CANNOT PURCHASE STOCK: NOT ENOUGH STOCKS REMAINING");
+			}
+			else if(this.user.getBalance() < amount*resultSet.getFloat(1)+20){
+				System.out.println("CANNOT PURCHASE STOCK: NOT ENOUGH MONEY IN BALANCE");
+			}
+			else {
+				resultSet.updateInt(2, resultSet.getInt(2) - amount);
+				this.user.setBalance((amount * resultSet.getFloat(1) + 20) * -1);
 
-			String query = "INSERT INTO StockTransaction(tid, quantity, price, symbol) VALUES ####, "+amount+", "+amount*currentPrice+", "+key+")";
-			ResultSet resultSet = statement.executeQuery(query);
-			//UPDATE MarketAccount SET Balance = balance WHERE aid = this.aid;
-			//UPDATE Stock SET numStocks = numStocks - amount WHERE symbol = key;
+				String query_2 = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, 'Stock purchase', date, this.aid)";
+				ResultSet resultSet_2 = statement.executeQuery(query);
 
-			//INSERT INTO Transactions(tid, type, date, aid)
-			//VALUES (####, "Stock purchase", date, this.aid)
-			
-			//INSERT INTO StockTransaction(tid, quantity, price, symbol) 
-			//VALUES (####, amount, amount*currentPrice, key);	
+				String query_3 = "INSERT INTO StockTransaction(tid, quantity, price, symbol) VALUES ####, " + amount + ", " + amount * currentPrice + ", " + key + ")";
+				ResultSet resultSet_3 = statement.executeQuery(query);
+				//UPDATE MarketAccount SET Balance = balance WHERE aid = this.aid;
+				//UPDATE Stock SET numStocks = numStocks - amount WHERE symbol = key;
+
+				//INSERT INTO Transactions(tid, type, date, aid)
+				//VALUES (####, "Stock purchase", date, this.aid)
+
+				//INSERT INTO StockTransaction(tid, quantity, price, symbol)
+				//VALUES (####, amount, amount*currentPrice, key);
+			}
+		} catch (Exception e) {
+			System.err.println(e);
 		}
 	}
 
 	public void sellStock(String key, int amount, float ogprice){
-		Class.forName("com.mysql.jdbc.Driver");
-	  Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 
-	  Statement statement = connection.createStatement();
+			Statement statement = connection.createStatement();
 
-	  String query = "select currentPrice, numStocks from Stock where Stock.key = "+key;
-	  ResultSet resultSet = statement.executeQuery(query);
-	  float currentPrice = resultSet.getFloat(1);
-		//select currentPrice, numStocks from Stock where Stock.key = key;
-		resultSet.updateInt(2, resultSet.getInt(2)+amount);
-		
-		this.user.changeBalance((amount*resultSet.getFloat(1)+20) *-1);
+			String query = "select currentPrice, numStocks from Stock where Stock.key = " + key;
+			ResultSet resultSet = statement.executeQuery(query);
+			float currentPrice = resultSet.getFloat(1);
+			//select currentPrice, numStocks from Stock where Stock.key = key;
+			resultSet.updateInt(2, resultSet.getInt(2) + amount);
 
-		String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, 'Stock sold', date, this.aid)";
-		ResultSet resultSet = statement.executeQuery(query);
+			this.user.setBalance((amount * resultSet.getFloat(1) + 20) * -1);
 
-		String query = "INSERT INTO StockTransaction(tid, quantity, price, symbol) VALUES ####, "+amount+", "+amount*currentPrice+", "+key+")";
-		ResultSet resultSet = statement.executeQuery(query);
-	//select currentPrice, numStocks from Stock where Stock.key = key;
-	//UPDATE MarketAccount SET Balance = balance WHERE aid = this.aid;
-	//UPDATE Stock SET numStocks = numStocks + amount WHERE symbol = key;
+			String query_2 = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, 'Stock sold', date, this.aid)";
+			ResultSet resultSet_2 = statement.executeQuery(query);
 
-	//INSERT INTO Transactions(tid, type, date, aid)
-	//VALUES (####, "Stock sold", date, this.aid)
-			
-	//INSERT INTO StockTransaction(tid, quantity, price, symbol) 
-	//VALUES (####, amount, amount*currentPrice, key);	
+			String query_3 = "INSERT INTO StockTransaction(tid, quantity, price, symbol) VALUES ####, " + amount + ", " + amount * currentPrice + ", " + key + ")";
+			ResultSet resultSet_3 = statement.executeQuery(query);
+			//select currentPrice, numStocks from Stock where Stock.key = key;
+			//UPDATE MarketAccount SET Balance = balance WHERE aid = this.aid;
+			//UPDATE Stock SET numStocks = numStocks + amount WHERE symbol = key;
+
+			//INSERT INTO Transactions(tid, type, date, aid)
+			//VALUES (####, "Stock sold", date, this.aid)
+
+			//INSERT INTO StockTransaction(tid, quantity, price, symbol)
+			//VALUES (####, amount, amount*currentPrice, key);
+		} catch (Exception e) {
+			System.err.println(e);
+		}
 	}
 
 	public void displayMovieDetails(String movieTitle){
