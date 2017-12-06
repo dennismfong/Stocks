@@ -53,9 +53,10 @@ public class User{
       String query = "select * from Customer where username = \"" + username+ "\"";
       ResultSet resultSet = statement.executeQuery(query);
 
-      this.name = resultSet.getString(1);
-      this.ssn = resultSet.getString(7);
-
+      if (resultSet.next()) {
+        this.name = resultSet.getString(1);
+        this.ssn = resultSet.getString(7);
+      }
     } catch (Exception e) {
       System.out.println(e);
     }
