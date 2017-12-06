@@ -36,9 +36,10 @@ public class ManagerInterface {
 			ResultSet resultSet_2 = statement.executeQuery(query);
 
 			this.user.setBalance(resultSet.getFloat(1));
-			return success;
 			statement.close();
 			connection.close();
+			
+			return success;
 		} catch (Exception e){
 			System.err.println(e);
 		}
