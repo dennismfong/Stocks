@@ -77,9 +77,9 @@ public class TraderInterface {
       String address = br.readLine();
       System.out.println("Enter in your state's two letter code (ie. CA, AL)");
       String state = br.readLine();
-      System.out.println("Enter in your phone number (ie. 123-456-7890)");
+      System.out.println("Enter in your phone number (ie. 1234567890)");
       String phone = br.readLine();
-      System.out.println("Enter in your email address (name@domain.suffix");
+      System.out.println("Enter in your email address (name@domain.suffix)");
       String email = br.readLine();
       System.out.println("Enter in your tax ID");
       int taxId = Integer.parseInt(br.readLine());
