@@ -1,6 +1,7 @@
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 
 public class TraderInterface {
 /*
@@ -19,8 +20,24 @@ public class TraderInterface {
   }
 
   public void displayGreeting() {
-    System.out.println("Welcome to the Trader Interface of StarsRUs");
-    System.out.println("Issue commands using the number key associated with your request");
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+      Statement statement = connection.createStatement();
+
+      String query = "select * from MarketDate";
+      ResultSet resultSet = statement.executeQuery(query);
+      Date date = resultSet.getDate(1);
+
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+      String dateStr = sdf.format(date);
+
+      System.out.println("Welcome to the Trader Interface of StarsRUs");
+      System.out.println("Today's date is " + dateStr);
+      System.out.println("Issue commands using the number key associated with your request");
+    } catch (Exception e) {
+      System.err.println(e);
+    }
   }
 
   public boolean login(String username, String password) {
@@ -59,11 +76,12 @@ public class TraderInterface {
 
     boolean loggedIn = false;
     boolean exit = false;
-
+    
     traderifc.displayGreeting();
     while (!exit) {
       try {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("LOGIN PORTAL");
         System.out.println("Are you a registered user?");
         System.out.println("1.	yes");
         System.out.println("2.	no");
