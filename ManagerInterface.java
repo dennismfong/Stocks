@@ -52,7 +52,7 @@ public class ManagerInterface {
 			}
 		}
 	}
-	public static void generateMonthlyStatement(String username){
+	public void generateMonthlyStatement(String username){
 		Class.forName("com.mysql.jdbc.Driver");
 	  Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 
@@ -74,7 +74,7 @@ public class ManagerInterface {
 		connection.close();
 	}
 
-	public static void generateCustomerReport(String username){
+	public void generateCustomerReport(String username){
 		Class.forName("com.mysql.jdbc.Driver");
 	  Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 	  Statement statement = connection.createStatement();
@@ -90,7 +90,7 @@ public class ManagerInterface {
 		connection.close();
 	}
 
-	public static void addInterest(){
+	public void addInterest(){
 		//UPDATE Account A, MarketAccount MA
     //SET
     //A.balance = A.balance * MA.interest
@@ -112,7 +112,7 @@ public class ManagerInterface {
     System.out.println("INTEREST ADDED TO MARKET ACCOUNTS");
 	}
 
-	public static void deleteTransaction(){		
+	public void deleteTransaction(){
 		Class.forName("com.mysql.jdbc.Driver");
 	  Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 	  Statement statement = connection.createStatement();

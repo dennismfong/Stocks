@@ -21,7 +21,7 @@ public class TraderInterface {
 	public boolean login(String username, String password) {
 		boolean success = true;
 		// Add in code to check if user is in the customer table
-		this.name = "Test User"; // Update it with the cname column from query
+		user.setName("Test User"); // Update it with the cname column from query
 		return success;
 	}
 
@@ -95,7 +95,7 @@ public class TraderInterface {
 			}
 
 			// Start of application logic
-			System.out.println("Welcome " + traderifc.name + " to your portal!");
+			System.out.println("Welcome " + traderifc.user.getName() + " to your portal!");
 			System.out.println("Issue commands using the number key associated with your request");
 
 			System.out.println("\n\n"
@@ -114,7 +114,7 @@ public class TraderInterface {
 		}
 	}
 
-	public static void showBalance(){
+	public void showBalance(){
 		Class.forName("com.mysql.jdbc.Driver");
 		Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 		Statement statement = connection.createStatement();
@@ -124,7 +124,7 @@ public class TraderInterface {
 		System.out.println("CURRENT BALANCE: "+resultSet.getInt(1));
 	}
 
-	public static void depositBalance(int money){
+	public void depositBalance(int money){
 		//UPDATE MarketAccount SET Balance = Balance + money WHERE aid = this.aid";
 		this.user.changeBalance(money);
 
@@ -143,7 +143,7 @@ public class TraderInterface {
     System.out.println("DEPOSITED "+ money+ " DOLLARS.");
 	}
 
-	public static void withdrawBalance(int money){
+	public void withdrawBalance(int money){
 		Class.forName("com.mysql.jdbc.Driver");
 		Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 		Statement statement = connection.createStatement();
@@ -171,7 +171,7 @@ public class TraderInterface {
 		statement.close();
     connection.close();
 	}
-	public static void listStockDetails(String stock){
+	public void listStockDetails(String stock){
 	  Class.forName("com.mysql.jdbc.Driver");
 	  Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 
@@ -196,7 +196,7 @@ public class TraderInterface {
 	  connection.close();
 	}
 
-	public static void buyStock(String key, int amount){
+	public void buyStock(String key, int amount){
 		Class.forName("com.mysql.jdbc.Driver");
 	  Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 
@@ -232,7 +232,7 @@ public class TraderInterface {
 		}
 	}
 
-	public static void sellStock(String key, int amount, float ogprice){
+	public void sellStock(String key, int amount, float ogprice){
 		Class.forName("com.mysql.jdbc.Driver");
 	  Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 
@@ -262,7 +262,7 @@ public class TraderInterface {
 	//VALUES (####, amount, amount*currentPrice, key);	
 	}
 
-	public static void displayMovieDetails(String movieTitle){
+	public void displayMovieDetails(String movieTitle){
 
 	}
 }
