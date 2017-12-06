@@ -49,7 +49,6 @@ public class TraderInterface {
   }
 
   public boolean registerUser() {
-    boolean registered = true; // Set to true for debugging purposes
     System.out.println("Welcome to the register portal of StarsRUs");
     try {
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -102,7 +101,7 @@ public class TraderInterface {
       preparedStatement.setString(9, address);
       preparedStatement.executeUpdate();
 
-      return registered;
+      return true;
 
     } catch (Exception e) {
       e.printStackTrace();
