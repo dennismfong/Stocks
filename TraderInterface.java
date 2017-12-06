@@ -53,15 +53,54 @@ public class TraderInterface {
     System.out.println("Welcome to the register portal of StarsRUs");
     try {
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-      System.out.println("Enter in your desired username");
-      String username = br.readLine();
-//			Only works on CSIL and not IntelliJ
-//			Console console = System.console();
-//			String password = new String(console.readPassword("Enter in your desired password"));
+      boolean unique = false;
+      String username = "";
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+      while (!unique) {
+        System.out.println("Enter in your desired username");
+        username = br.readLine();
+        Statement statement = connection.createStatement();
+        String query = "select * from Customer where username = \"" + username + "\"";
+        ResultSet resultSet = statement.executeQuery(query);
+        if (!resultSet.isBeforeFirst()) {
+          System.out.println("Username already exists, please select a new username");
+          break;
+        }
+      }
       System.out.println("Enter in your desired password");
       String password = br.readLine();
+      System.out.println("Enter in your full name");
+      String name = br.readLine();
+      System.out.println("Enter in your residential address");
+      String address = br.readLine();
+      System.out.println("Enter in your state's two letter code (ie. CA, AL)");
+      String state = br.readLine();
+      System.out.println("Enter in your phone number (ie. 123-456-7890)");
+      String phone = br.readLine();
+      System.out.println("Enter in your email address (name@domain.suffix");
+      String email = br.readLine();
+      System.out.println("Enter in your tax ID");
+      int taxId = Integer.parseInt(br.readLine());
+      System.out.println("Enter in your social security number (123-45-6789)");
+      int ssn = Integer.parseInt(br.readLine());
 
       // Add code to create a new row in the Customer table
+
+      String registerString = "insert into Customer"
+              + "(cname, state, phoneNum, email, taxId, username, password, SSN, address) VALUES"
+              + "(?,?,?,?,?,?,?,?,?)";
+
+      PreparedStatement preparedStatement = connection.prepareStatement(registerString);
+      preparedStatement.setString(1, name);
+      preparedStatement.setString(2, state);
+      preparedStatement.setString(3, phone);
+      preparedStatement.setString(4, email);
+      preparedStatement.setInt(5, taxId);
+      preparedStatement.setString(6, username);
+      preparedStatement.setString(7, password);
+      preparedStatement.setInt(8, ssn);
+      preparedStatement.setString(9, address);
+      preparedStatement.executeUpdate();
 
       return registered;
 
