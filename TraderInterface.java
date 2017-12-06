@@ -15,6 +15,7 @@ public class TraderInterface {
 	private String PWD = Config.pwd;
 
 	public TraderInterface() {
+		user = new User();
 	}
 
 	public void displayGreeting() {
