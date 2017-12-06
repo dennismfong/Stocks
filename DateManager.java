@@ -26,6 +26,7 @@ public class DateManager {
       System.out.println("Enter in the month (ie. 02)");
       sb.append(br.readLine()).append("/");
       System.out.println("Enter in the day (ie. 24)");
+      sb.append(br.readLine());
 
       Date date = new Date();
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
