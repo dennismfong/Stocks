@@ -14,7 +14,7 @@ public class DateManager {
 
   }
 
-  public static void main() {
+  public static void main(String[] args) {
     DateManager dateManager = new DateManager();
     int year, month, day;
 
