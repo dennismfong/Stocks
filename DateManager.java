@@ -49,13 +49,8 @@ public class DateManager {
           java.sql.Date dateDB = new java.sql.Date(date.getTime());
           String updateString = "insert into MarketDate (date) VALUES (?)";
           PreparedStatement preparedStatement = connection.prepareStatement(updateString);
-
           preparedStatement.setDate(1, dateDB);
-
-
-          String query = "insert into MarketDate(date) values(" + dateStr + ")";
-          statement.executeUpdate(query);
-
+          preparedStatement.executeUpdate();
         } catch (Exception e) {
           System.err.println(e);
         }
