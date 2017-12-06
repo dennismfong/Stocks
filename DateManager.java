@@ -6,9 +6,9 @@ import java.util.Date;
 
 public class DateManager {
 
-  String HOST = Config.host;
-  String USER = Config.user;
-  String PWD = Config.pwd;
+  public String HOST = Config.host;
+  public String USER = Config.user;
+  public String PWD = Config.pwd;
 
   public DateManager() {
 
@@ -42,7 +42,10 @@ public class DateManager {
                   dateManager.USER,
                   dateManager.PWD);
           Statement statement = connection.createStatement();
-          String query = "delete from MarketDate";
+          String update = "delete from MarketDate";
+          statement.executeUpdate(update);
+
+          String query = "insert into MarketDate(date) values (" + date + ")";
           ResultSet resultSet = statement.executeQuery(query);
 
         } catch (Exception e) {
