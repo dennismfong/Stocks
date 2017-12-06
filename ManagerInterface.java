@@ -38,7 +38,7 @@ public class ManagerInterface {
 			this.user.setBalance(resultSet.getFloat(1));
 			statement.close();
 			connection.close();
-			
+
 			return success;
 		} catch (Exception e){
 			System.err.println(e);

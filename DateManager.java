@@ -45,6 +45,14 @@ public class DateManager {
           String update = "delete from MarketDate";
           statement.executeUpdate(update);
 
+
+          java.sql.Date dateDB = new java.sql.Date(date.getTime());
+          String updateString = "insert into MarketDate (date) VALUES (?)";
+          PreparedStatement preparedStatement = connection.prepareStatement(updateString);
+
+          preparedStatement.setDate(1, dateDB);
+
+
           String query = "insert into MarketDate(date) values(" + dateStr + ")";
           statement.executeUpdate(query);
 
