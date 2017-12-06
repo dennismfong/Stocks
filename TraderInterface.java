@@ -175,13 +175,7 @@ public class TraderInterface {
 
   public void showBalance() {
     try {
-      Class.forName("com.mysql.jdbc.Driver");
-      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
-      Statement statement = connection.createStatement();
-
-      String query = "select * from Account WHERE Account.username = " + this.user.getUsername() + " AND Account.aid IN (select aid from MarketAccount)";
-      ResultSet resultSet = statement.executeQuery(query);
-      System.out.println("CURRENT BALANCE: " + resultSet.getInt(1));
+      System.out.println("CURRENT BALANCE: " + this.user.getBalance());
     } catch (Exception e) {
       System.err.println(e);
     }
@@ -189,7 +183,7 @@ public class TraderInterface {
 
   public void depositBalance(int money) {
     //UPDATE MarketAccount SET Balance = Balance + money WHERE aid = this.aid";
-    this.user.setBalance(money);
+    this.user.setBalance(this.user.getBalance()+money);
 
     try {
       Class.forName("com.mysql.jdbc.Driver");
