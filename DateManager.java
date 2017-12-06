@@ -22,9 +22,9 @@ public class DateManager {
       StringBuilder sb = new StringBuilder();
       System.out.println("Enter in the year (ie. 2000)");
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-      sb.append(br.readLine()).append("/");
+      sb.append(br.readLine()).append("-");
       System.out.println("Enter in the month (ie. 02)");
-      sb.append(br.readLine()).append("/");
+      sb.append(br.readLine()).append("-");
       System.out.println("Enter in the day (ie. 24)");
       sb.append(br.readLine());
 
