@@ -42,10 +42,22 @@ public class TraderInterface {
   }
 
   public boolean login(String username, String password) {
-    boolean success = true;
-    // Add in code to check if user is in the customer table
-    user.setName("Test User"); // Update it with the cname column from query
-    return success;
+    try {
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+      Statement statement = connection.createStatement();
+      String query = "select * from Customer where username = \"" + username+ "\""
+              + " AND " + "password = \"" + password + "\"";
+      ResultSet resultSet = statement.executeQuery(query);
+      if (resultSet.isBeforeFirst()) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+    return false;
   }
 
   public boolean registerUser() {
@@ -151,6 +163,7 @@ public class TraderInterface {
           if (!loggedIn) {
             System.out.println("Sorry, that user was not found, please try again");
           } else {
+            // set user.name, user.variables...
             break;
           }
         }
