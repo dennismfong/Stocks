@@ -46,7 +46,7 @@ public class DateManager {
           statement.executeUpdate(update);
 
           String query = "insert into MarketDate(date) values (" + date + ")";
-          ResultSet resultSet = statement.executeQuery(query);
+          statement.executeUpdate(query);
 
         } catch (Exception e) {
           System.err.println(e);
