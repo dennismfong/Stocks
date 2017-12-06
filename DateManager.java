@@ -22,11 +22,12 @@ public class DateManager {
       System.out.println("Enter in the year (ie. 2000)");
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
       year = Integer.parseInt(br.readLine());
-      System.out.println("Enter in the month (ie. 02");
+      System.out.println("Enter in the month (ie. 02)");
       month = Integer.parseInt(br.readLine());
       System.out.println("Enter in the day (ie. 24");
       day = Integer.parseInt(br.readLine());
 
+      System.out.println(year);
       Date date = new Date();
       date.setYear(year);
       date.setMonth(month);
