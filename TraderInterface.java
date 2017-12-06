@@ -147,6 +147,7 @@ public class TraderInterface {
             continue;
           }
         } else if ("3".equals(answer)) {
+          loggedIn = false;
           break;
         }
 
@@ -217,6 +218,7 @@ public class TraderInterface {
             case 10:
               break;
             case 11:
+              loggedIn = false;
               exitPortal = true;
               break;
           }
