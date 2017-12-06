@@ -27,6 +27,7 @@ public class TraderInterface {
 
       String query = "select * from MarketDate";
       ResultSet resultSet = statement.executeQuery(query);
+      resultSet.absolute(1);
       Date date = resultSet.getDate(1);
 
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -76,7 +77,7 @@ public class TraderInterface {
 
     boolean loggedIn = false;
     boolean exit = false;
-    
+
     traderifc.displayGreeting();
     while (!exit) {
       try {
