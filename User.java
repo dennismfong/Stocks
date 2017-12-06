@@ -5,6 +5,15 @@ public class User{
 	private float balance;
 	private String name;
 	private int ssn;
+	private String HOST;
+	private String USER;
+	private String PWD;
+
+	public User() {
+		HOST = Config.host;
+		USER = Config.user;
+		PWD = Config.pwd;
+	}
 
 	public void setName(String name){
 		this.name = name;
@@ -17,7 +26,7 @@ public class User{
 	    Statement statement = connection.createStatement();
 
 	    String query = "UPDATE Account SET balance = "+value+" WHERE ssn = "+this.ssn;
-	    ResultSet resultSet = statement.executeUpdate(query);
+	    statement.executeUpdate(query);
 	 		this.balance = balance;
 
 	 		statement.close();
