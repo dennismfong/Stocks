@@ -82,7 +82,7 @@ public class TraderInterface {
     while (!exit) {
       try {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("LOGIN PORTAL");
+        System.out.println("\n\nLOGIN PORTAL");
         System.out.println("Are you a registered user?");
         System.out.println("1.	yes");
         System.out.println("2.	no");
