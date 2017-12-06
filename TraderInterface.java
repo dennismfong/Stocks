@@ -84,7 +84,7 @@ public class TraderInterface {
       System.out.println("Enter in your tax ID");
       int taxId = Integer.parseInt(br.readLine());
       System.out.println("Enter in your social security number (123-45-6789)");
-      int ssn = Integer.parseInt(br.readLine());
+      String ssn = br.readLine();
 
       // Add code to create a new row in the Customer table
 
@@ -100,7 +100,7 @@ public class TraderInterface {
       preparedStatement.setInt(5, taxId);
       preparedStatement.setString(6, username);
       preparedStatement.setString(7, password);
-      preparedStatement.setInt(8, ssn);
+      preparedStatement.setString(8, ssn);
       preparedStatement.setString(9, address);
       preparedStatement.executeUpdate();
 
