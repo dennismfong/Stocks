@@ -9,9 +9,10 @@ public class SystemManager {
   public String HOST = Config.host;
   public String USER = Config.user;
   public String PWD = Config.pwd;
+  public Date currDate;
 
   public SystemManager() {
-
+    currDate = this.getDate();
   }
 
   public void openMarket() {
@@ -24,6 +25,21 @@ public class SystemManager {
       Connection connection = DriverManager.getConnection(this.HOST,
               this.USER,
               this.PWD);
+      Statement statement = connection.createStatement();
+      String query = "select * from Stock";
+      ResultSet resultSet = statement.executeQuery(query);
+
+      while (resultSet.next()) {
+        java.sql.Date dateDB = new java.sql.Date(this.currDate.getTime());
+        query = "insert into StockInstance (date, closingPrice, symbol) VALUES (?,?,?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setDate(1, dateDB);
+        preparedStatement.setFloat(2, resultSet.getFloat(3));
+        preparedStatement.setString(3, resultSet.getString(1));
+        preparedStatement.executeUpdate();
+
+      }
+
       connection.close();
     } catch (Exception e) {
       System.err.println(e);
@@ -32,6 +48,23 @@ public class SystemManager {
 
   public void setStockPrice() {
 
+  }
+
+  public Date getDate() {
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(this.HOST,
+              this.USER,
+              this.PWD);
+      Statement statement = connection.createStatement();
+      String query = "select * from MarketDate";
+      ResultSet resultSet = statement.executeQuery(query);
+      resultSet.next();
+      return resultSet.getDate(1);
+    } catch (Exception e) {
+      System.err.println(e);
+    }
+    return null;
   }
 
   public void setDate() {
@@ -99,6 +132,7 @@ public class SystemManager {
         case 1:
           break;
         case 2:
+          systemManager.closeMarket();
           break;
         case 3:
           break;
