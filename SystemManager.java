@@ -23,6 +23,16 @@ public class SystemManager {
   }
 
   public void setStockPrice() {
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(this.HOST,
+              this.USER,
+              this.PWD);
+
+      connection.close();
+    } catch (Exception e) {
+
+    }
 
   }
 
@@ -60,6 +70,8 @@ public class SystemManager {
           PreparedStatement preparedStatement = connection.prepareStatement(updateString);
           preparedStatement.setDate(1, dateDB);
           preparedStatement.executeUpdate();
+          preparedStatement.close();
+          connection.close();
         } catch (Exception e) {
           System.err.println(e);
         }
