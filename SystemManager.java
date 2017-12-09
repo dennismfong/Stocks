@@ -14,6 +14,18 @@ public class SystemManager {
 
   }
 
+  public void openMarket() {
+
+  }
+
+  public void closeMarket() {
+
+  }
+
+  public void setStockPrice() {
+
+  }
+
   public void setDate() {
     try {
       StringBuilder sb = new StringBuilder();
@@ -69,7 +81,6 @@ public class SystemManager {
             + "\n4.     Set a new date to be today's date"
             + "\n\n"
     );
-
 
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
