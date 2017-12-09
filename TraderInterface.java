@@ -37,6 +37,8 @@ public class TraderInterface {
       System.out.println("Welcome to the Trader Interface of StarsRUs");
       System.out.println("Today's date is " + dateStr);
       System.out.println("Issue commands using the number key associated with your request");
+      statement.close();
+      connection.close();
     } catch (Exception e) {
       System.err.println(e);
     }
@@ -51,9 +53,13 @@ public class TraderInterface {
       ResultSet resultSet = statement.executeQuery(query);
       if (resultSet.isBeforeFirst()) {
         // Matching row in the database
+        statement.close();
+        connection.close();
         return true;
       }
       else {
+        statement.close();
+        connection.close();
         return false;
       }
     } catch (Exception e) {
@@ -118,6 +124,8 @@ public class TraderInterface {
       preparedStatement.setString(9, address);
       preparedStatement.executeUpdate();
 
+      preparedStatement.close();
+      connection.close();
       return true;
 
     } catch (Exception e) {
@@ -203,6 +211,7 @@ public class TraderInterface {
           else {
             switch (answer) {
               case 1:
+                traderifc.depositBalance();
                 break;
               case 2:
                 break;
@@ -227,9 +236,6 @@ public class TraderInterface {
                 loggedIn = false;
                 exitPortal = true;
                 break;
-              default:
-                System.out.println("Invalid input");
-                break;
             }
           }
         } catch (Exception e) {
@@ -247,13 +253,6 @@ public class TraderInterface {
         + taxId + ")";
       ResultSet resultSet = statement.executeQuery(query);
       if (resultSet.isBeforeFirst()) {
-        resultSet.next();
-        int aid = resultSet.getInt(2);
-        statement = connection.createStatement();
-        query = "select balance from Account where aid = " + aid;
-        resultSet = statement.executeQuery(query);
-        resultSet.next();
-        this.user.setBalance(resultSet.getDouble(1));
         statement.close();
         connection.close();
         // Matching row in the database
@@ -315,6 +314,7 @@ public class TraderInterface {
           preparedStatement.setDouble(1, 0.03);
           preparedStatement.setInt(2, aid);
           preparedStatement.executeUpdate();
+          preparedStatement.close();
           statement.close();
           connection.close();
           return;
@@ -333,21 +333,50 @@ public class TraderInterface {
     }
   }
 
-  public void depositBalance(int money) {
-    //UPDATE MarketAccount SET Balance = Balance + money WHERE aid = this.aid";
-    this.user.setBalance(this.user.getBalance()+money);
+  public void depositBalance() {
 
     try {
+      System.out.println("How much money do you want to deposit?");
+      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+      double money = Double.parseDouble(reader.readLine());
+      //UPDATE MarketAccount SET Balance = Balance + money WHERE aid = this.aid";
+      this.user.setBalance(this.user.getBalance()+money);
+      int aid = this.user.getMarketAccountID();
       Class.forName("com.mysql.jdbc.Driver");
       Connection connection = DriverManager.getConnection(HOST, USER, PWD);
       Statement statement = connection.createStatement();
 
-      String query = "INSERT INTO Transaction(tid, type, date, aid) VALUES (####, \" Deposit \", date, this.aid)";
-      statement.executeUpdate(query);
+      String query = "select COUNT(*) from Transaction";
+      ResultSet resultSet = statement.executeQuery(query);
+      resultSet.next();
+      int tid = resultSet.getInt(1) + 1;      
+      Class.forName("com.mysql.jdbc.Driver");
 
-      String query_2 = "INSERT INTO MarketTransaction(tid, amount) VALUES (####, " + money + ")";
-      statement.executeUpdate(query);
+      query = "select * from MarketDate";
+      resultSet = statement.executeQuery(query);
+      resultSet.next();
+      Date date = resultSet.getDate(1);
+      java.sql.Date dateDB = new java.sql.Date(date.getTime());
+      
+      String transactionString = "INSERT INTO Transaction(tid, type, date, aid) VALUES " +
+      "(?, ?, ?, ?)";
+  
+      PreparedStatement preparedStatement = connection.prepareStatement(transactionString);
+      preparedStatement.setInt(1, tid);
+      preparedStatement.setString(2, " Deposit ");
+      preparedStatement.setDate(3, dateDB);
+      preparedStatement.setInt(4, aid);
+      preparedStatement.executeUpdate();
 
+      transactionString = "INSERT INTO MarketTransaction(tid, amount) VALUES " +
+      "(?, ?)";
+  
+      preparedStatement = connection.prepareStatement(transactionString);
+      preparedStatement.setInt(1, tid);
+      preparedStatement.setDouble(2, money);
+      preparedStatement.executeUpdate();
+
+      preparedStatement.close();
       statement.close();
       connection.close();
       System.out.println("DEPOSITED " + money + " DOLLARS.");
@@ -450,6 +479,8 @@ public class TraderInterface {
 
         //INSERT INTO StockTransaction(tid, quantity, price, symbol)
         //VALUES (####, amount, amount*currentPrice, key);
+      statement.close();
+      connection.close();
       }
     } catch (Exception e) {
       System.err.println(e);
@@ -493,4 +524,26 @@ public class TraderInterface {
   public void displayMovieDetails(String movieTitle) {
 
   }
+
+/*  public java.sql.Date getDate(){
+    java.sql.Date dateDB;
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+
+      Statement statement = connection.createStatement();
+
+      String query = "select * from MarketDate";
+      ResultSet resultSet = statement.executeQuery(query);
+      resultSet.next();
+      Date date = resultSet.getDate(1);
+      java.sql.Date dateDB = new java.sql.Date(date.getTime());
+      statement.close();
+      connection.close();
+      return dateDB;
+    } catch (Exception e) {
+      System.err.println(e);
+    }
+    return dateDB;
+  }*/
 }
