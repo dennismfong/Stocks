@@ -16,7 +16,20 @@ public class SystemManager {
   }
 
   public void openMarket() {
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(this.HOST,
+              this.USER,
+              this.PWD);
+      Statement statement = connection.createStatement();
+      String query = "update Stock set openingPrice = Stock.currentPrice";
+      statement.executeUpdate(query);
 
+      statement.close();
+      connection.close();
+    } catch (Exception e) {
+      System.err.println(e);
+    }
   }
 
   public void closeMarket() {
@@ -167,6 +180,7 @@ public class SystemManager {
         int answer = Integer.parseInt(reader.readLine());
         switch (answer) {
           case 1:
+            systemManager.openMarket();
             break;
           case 2:
             systemManager.closeMarket();
