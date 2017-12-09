@@ -28,11 +28,12 @@ public class SystemManager {
       Statement statement = connection.createStatement();
       String query = "select * from Stock";
       ResultSet resultSet = statement.executeQuery(query);
+      PreparedStatement preparedStatement = null;
 
       while (resultSet.next()) {
         java.sql.Date dateDB = new java.sql.Date(this.currDate.getTime());
         query = "insert into StockInstance (date, closingPrice, symbol) VALUES (?,?,?)";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement = connection.prepareStatement(query);
         preparedStatement.setDate(1, dateDB);
         preparedStatement.setDouble(2, resultSet.getDouble(3));
         preparedStatement.setString(3, resultSet.getString(1));
@@ -40,6 +41,7 @@ public class SystemManager {
 
       }
 
+      preparedStatement.close();
       connection.close();
     } catch (Exception e) {
       System.err.println(e);
@@ -47,7 +49,36 @@ public class SystemManager {
   }
 
   public void setStockPrice() {
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(this.HOST,
+              this.USER,
+              this.PWD);
+      Statement statement = connection.createStatement();
 
+      System.out.println("Type in the 3 letter symbol of the stock to change");
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+      String symbolToChange = br.readLine();
+
+      String query = "select * from Stock where symbol = \"" + symbolToChange +"\"";
+      ResultSet resultSet = statement.executeQuery(query);
+      resultSet.next();
+      Double currPrice = resultSet.getDouble(3);
+      System.out.println("The current price is " + currPrice);
+      System.out.println("What would you like to change it to?");
+      String priceToSet = br.readLine();
+
+      query = "update Stock set currentPrice = "
+              + priceToSet
+              + " where symbol = \""
+              + symbolToChange
+              + "\"";
+      statement.executeUpdate(query);
+      statement.close();
+      connection.close();
+    } catch (Exception e) {
+      System.err.println(e);
+    }
   }
 
   public Date getDate() {
@@ -60,7 +91,10 @@ public class SystemManager {
       String query = "select * from MarketDate";
       ResultSet resultSet = statement.executeQuery(query);
       resultSet.next();
-      return resultSet.getDate(1);
+      Date returnDate = resultSet.getDate(1);
+      statement.close();
+      connection.close();
+      return returnDate;
     } catch (Exception e) {
       System.err.println(e);
     }
@@ -138,6 +172,7 @@ public class SystemManager {
             systemManager.closeMarket();
             break;
           case 3:
+            systemManager.setStockPrice();
             break;
           case 4:
             systemManager.setDate();
