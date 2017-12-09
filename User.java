@@ -85,4 +85,24 @@ public class User{
       System.out.println(e);
     }
   }
+  public int getMarketAccountID(){
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+
+      Statement statement = connection.createStatement();
+
+      String query = "select A.aid from Account A where "
+      + "A.taxId = " + this.taxId + " and A.aid in (select MA.aid from MarketAccount MA)";
+      ResultSet resultSet = statement.executeQuery(query);
+      resultSet.next();
+      int aid = resultSet.getInt(1);
+      statement.close();
+      connection.close();
+      return aid;
+    } catch (Exception e) {
+      System.err.println(e);
+    }
+    return 0;
+  }
 }
