@@ -2,6 +2,7 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class TraderInterface {
 /*
@@ -179,7 +180,6 @@ public class TraderInterface {
         // Start of application logic
         System.out.println("Welcome " + traderifc.user.getName() + " to your portal!");
         System.out.println("Issue commands using the number key associated with your request");
-
         System.out.println("\n\n"
                 + "\n1.     Deposit"
                 + "\n2.     Withdrawal"
@@ -198,35 +198,118 @@ public class TraderInterface {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
           int answer = Integer.parseInt(reader.readLine());
-          switch (answer) {
-            case 1:
-              break;
-            case 2:
-              break;
-            case 3:
-              break;
-            case 4:
-              break;
-            case 5:
-              break;
-            case 6:
-              break;
-            case 7:
-              break;
-            case 8:
-              break;
-            case 9:
-              break;
-            case 10:
-              break;
-            case 11:
-              loggedIn = false;
-              exitPortal = true;
-              break;
+          if(!traderifc.checkForMarketAccount(traderifc.user.getTaxId()))
+            ;
+          else {
+            switch (answer) {
+              case 1:
+                break;
+              case 2:
+                break;
+              case 3:
+                break;
+              case 4:
+                break;
+              case 5:
+                break;
+              case 6:
+                break;
+              case 7:
+                break;
+              case 8:
+                break;
+              case 9:
+                break;
+              case 10:
+                break;
+              case 11:
+                loggedIn = false;
+                exitPortal = true;
+                break;
+            }
           }
         } catch (Exception e) {
           System.err.println(e);
         }
+      }
+    }
+  }
+
+  public boolean checkForMarketAccount(int taxId) {
+    try {
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+      Statement statement = connection.createStatement();
+      String query = "select * from MarketAccount where aid in (select a.aid from Account a where a.taxId = " 
+        + taxId + ")";
+      ResultSet resultSet = statement.executeQuery(query);
+      if (resultSet.isBeforeFirst()) {
+        statement.close();
+        connection.close();
+        // Matching row in the database
+        return true;
+      }
+      else {
+        statement.close();
+        connection.close();
+        System.out.println("It appears you do not have a market account in our database. Would you like to open one? (You must deposit at least 1000 dollars when opening a new market account)");
+        System.out.println("\n\n"
+                + "\n1.     Yes"
+                + "\n2.     No"
+                + "\n\n"
+        );    
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        int answer = Integer.parseInt(reader.readLine());
+        switch (answer) {
+            case 1:
+              makeNewAccount(taxId,0);
+              return true;
+            case 2:
+              break;
+        }
+        return false;
+      }
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+    return false;
+  }
+
+  public void makeNewAccount(int taxId, int mode) { //0 = market, 1 = stock
+    while(true){
+      try {
+        int aid = ThreadLocalRandom.current().nextInt(0, 10001);
+        Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+        Statement statement = connection.createStatement();
+        String query = "select * from Account where aid = " + aid;
+        ResultSet resultSet = statement.executeQuery(query);
+        if (resultSet.isBeforeFirst()) {
+          ;  
+        }
+        else {
+          String registerString = "insert into Account"
+            + "(balance, aid, taxId) VALUES "
+            + "(?,?,?)";
+
+          PreparedStatement preparedStatement = connection.prepareStatement(registerString);
+          preparedStatement.setDouble(1, 1000);
+          preparedStatement.setInt(2, aid);
+          preparedStatement.setInt(3, taxId);
+          preparedStatement.executeUpdate();
+
+          registerString = "insert into MarketAccount"
+            + "(interest, aid) VALUES "
+            + "(?,?)";
+
+          preparedStatement = connection.prepareStatement(registerString);
+          preparedStatement.setDouble(1, 0.03);
+          preparedStatement.setInt(2, aid);
+          preparedStatement.executeUpdate();
+          statement.close();
+          connection.close();
+          return;
+        }
+      } catch (Exception e) {
+        System.out.println(e);
       }
     }
   }

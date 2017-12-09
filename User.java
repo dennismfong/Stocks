@@ -5,6 +5,7 @@ public class User{
 	private float balance;
 	private String name;
 	private String ssn;
+	private int taxId;
 	private String HOST;
 	private String USER;
 	private String PWD;
@@ -19,13 +20,17 @@ public class User{
 		this.name = name;
 	}
 
+	public void setTaxId(int taxid) {
+		this.taxId = taxid; 
+	}
+
 	public void setBalance(float value){
 		try{
 			Class.forName("com.mysql.jdbc.Driver");
 	    Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 	    Statement statement = connection.createStatement();
 
-	    String query = "UPDATE Account SET balance = "+value+" WHERE ssn = "+this.ssn;
+	    String query = "UPDATE Account A, MarketAccount MA SET A.balance = "+value+" WHERE A.taxId= "+this.taxId +" AND A.aid = MA.aid";
 	    statement.executeUpdate(query);
 	 		this.balance = balance;
 
@@ -46,6 +51,8 @@ public class User{
 
 	public String getUsername(){ return this.username; }
 
+	public int getTaxId(){ return this.taxId; }
+
 	public void setInfo(String username) {
     try {
       Connection connection = DriverManager.getConnection(HOST, USER, PWD);
@@ -56,6 +63,7 @@ public class User{
       if (resultSet.next()) {
         this.name = resultSet.getString(1);
         this.ssn = resultSet.getString(7);
+        this.taxId = resultSet.getInt(5);
       }
     } catch (Exception e) {
       System.out.println(e);
