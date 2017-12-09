@@ -227,6 +227,9 @@ public class TraderInterface {
                 loggedIn = false;
                 exitPortal = true;
                 break;
+              default:
+                System.out.println("Invalid input");
+                break;
             }
           }
         } catch (Exception e) {
