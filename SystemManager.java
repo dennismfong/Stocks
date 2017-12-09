@@ -4,20 +4,17 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class DateManager {
+public class SystemManager {
 
   public String HOST = Config.host;
   public String USER = Config.user;
   public String PWD = Config.pwd;
 
-  public DateManager() {
+  public SystemManager() {
 
   }
 
-  public static void main(String[] args) {
-    DateManager dateManager = new DateManager();
-    int year, month, day;
-
+  public void setDate() {
     try {
       StringBuilder sb = new StringBuilder();
       System.out.println("Enter in the year (ie. 2000)");
@@ -38,9 +35,9 @@ public class DateManager {
       if (answer.toLowerCase().contains("y")) {
         try {
           Class.forName("com.mysql.jdbc.Driver");
-          Connection connection = DriverManager.getConnection(dateManager.HOST,
-                  dateManager.USER,
-                  dateManager.PWD);
+          Connection connection = DriverManager.getConnection(this.HOST,
+                  this.USER,
+                  this.PWD);
           Statement statement = connection.createStatement();
           String update = "delete from MarketDate";
           statement.executeUpdate(update);
@@ -58,6 +55,38 @@ public class DateManager {
     } catch (Exception e) {
       System.err.println(e);
     }
+  }
 
+  public static void main(String[] args) {
+    SystemManager systemManager = new SystemManager();
+
+    System.out.println("System interface for demo");
+    System.out.println("Issue commands using the number key associated with your request");
+    System.out.println("\n\n"
+            + "\n1.     Open market for the day"
+            + "\n2.     Close market for the day"
+            + "\n3.     Set a new price for a stock"
+            + "\n4.     Set a new date to be today's date"
+            + "\n\n"
+    );
+
+
+    try {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+      int answer = Integer.parseInt(reader.readLine());
+      switch (answer) {
+        case 1:
+          break;
+        case 2:
+          break;
+        case 3:
+          break;
+        case 4:
+          systemManager.setDate();
+          break;
+      }
+    } catch (Exception e) {
+      System.err.println(e);
+    }
   }
 }
