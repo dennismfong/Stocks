@@ -244,8 +244,13 @@ public class TraderInterface {
         + taxId + ")";
       ResultSet resultSet = statement.executeQuery(query);
       if (resultSet.isBeforeFirst()) {
-        resultSet.absolute(1);
-        this.user.setBalance(resultSet.getFloat(1));
+        resultSet.next();
+        int aid = resultSet.getInt(2);
+        statement = connection.createStatement();
+        query = "select balance from Account where aid = " + aid;
+        resultSet = statement.executeQuery(query);
+        resultSet.next();
+        this.user.setBalance(resultSet.getDouble(1));
         statement.close();
         connection.close();
         // Matching row in the database

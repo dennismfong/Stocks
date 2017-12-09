@@ -2,7 +2,6 @@ import java.sql.*;
 
 public class User{
 	private String username;
-	private double balance;
 	private String name;
 	private String ssn;
 	private int taxId;
@@ -32,7 +31,6 @@ public class User{
 
 	    String query = "UPDATE Account A, MarketAccount MA SET A.balance = "+value+" WHERE A.taxId= "+this.taxId +" AND A.aid = MA.aid";
 	    statement.executeUpdate(query);
-	 		this.balance = balance;
 
 	 		statement.close();
 	    connection.close();
@@ -45,7 +43,25 @@ public class User{
 		this.username = username;
 	}
 
-	public double getBalance(){ return this.balance; }
+	public double getBalance(){		
+		try{
+			Class.forName("com.mysql.jdbc.Driver");
+	    Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+	    Statement statement = connection.createStatement();
+
+	    String query = "select balance from Account where taxId = " + this.taxId + " and aid in (select MA.aid from MarketAccount MA)";
+	    ResultSet resultSet = statement.executeQuery(query);
+	    resultSet.next();
+	    double balance = resultSet.getFloat(1);
+	 		statement.close();
+	    connection.close();
+	    return balance; 
+		} catch (Exception e) {
+      System.err.println(e);
+    }
+    return 0;
+  }
+
 
 	public String getName(){ return this.name; }
 
