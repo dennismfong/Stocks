@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class SystemManager {
@@ -15,6 +16,35 @@ public class SystemManager {
     currDate = this.getDate();
   }
 
+  private void incrementDate() {
+    Calendar c = Calendar.getInstance();
+    c.setTime(currDate);
+    c.add(Calendar.DATE, 1);  // number of days to add
+    currDate = c.getTime();
+
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(this.HOST,
+              this.USER,
+              this.PWD);
+      Statement statement = connection.createStatement();
+      String update = "delete from MarketDate";
+      statement.executeUpdate(update);
+
+
+      java.sql.Date dateDB = new java.sql.Date(currDate.getTime());
+      String updateString = "insert into MarketDate (date) VALUES (?)";
+      PreparedStatement preparedStatement = connection.prepareStatement(updateString);
+      preparedStatement.setDate(1, dateDB);
+      preparedStatement.executeUpdate();
+
+      preparedStatement.close();
+      connection.close();
+    } catch (Exception e) {
+      System.err.println(e);
+    }
+  }
+
   public void openMarket() {
     try {
       Class.forName("com.mysql.jdbc.Driver");
@@ -22,6 +52,7 @@ public class SystemManager {
               this.USER,
               this.PWD);
       Statement statement = connection.createStatement();
+      incrementDate();
       String query = "update Stock set openingPrice = Stock.currentPrice";
       statement.executeUpdate(query);
 
@@ -105,6 +136,7 @@ public class SystemManager {
       ResultSet resultSet = statement.executeQuery(query);
       resultSet.next();
       Date returnDate = resultSet.getDate(1);
+      this.currDate = returnDate;
       statement.close();
       connection.close();
       return returnDate;
@@ -148,6 +180,8 @@ public class SystemManager {
           PreparedStatement preparedStatement = connection.prepareStatement(updateString);
           preparedStatement.setDate(1, dateDB);
           preparedStatement.executeUpdate();
+          currDate = date;
+
           preparedStatement.close();
           connection.close();
         } catch (Exception e) {
@@ -165,6 +199,7 @@ public class SystemManager {
 
     while (!exit) {
       System.out.println("System interface for demo");
+      System.out.println("Today's date is " + systemManager.getDate());
       System.out.println("Issue commands using the number key associated with your request");
       System.out.println("\n\n"
               + "\n1.     Open market for the day"
