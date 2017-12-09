@@ -113,35 +113,42 @@ public class SystemManager {
   }
 
   public static void main(String[] args) {
+    boolean exit = false;
     SystemManager systemManager = new SystemManager();
 
-    System.out.println("System interface for demo");
-    System.out.println("Issue commands using the number key associated with your request");
-    System.out.println("\n\n"
-            + "\n1.     Open market for the day"
-            + "\n2.     Close market for the day"
-            + "\n3.     Set a new price for a stock"
-            + "\n4.     Set a new date to be today's date"
-            + "\n\n"
-    );
+    while (!exit) {
+      System.out.println("System interface for demo");
+      System.out.println("Issue commands using the number key associated with your request");
+      System.out.println("\n\n"
+              + "\n1.     Open market for the day"
+              + "\n2.     Close market for the day"
+              + "\n3.     Set a new price for a stock"
+              + "\n4.     Set a new date to be today's date"
+              + "\n5.     Exit"
+              + "\n\n"
+      );
 
-    try {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-      int answer = Integer.parseInt(reader.readLine());
-      switch (answer) {
-        case 1:
-          break;
-        case 2:
-          systemManager.closeMarket();
-          break;
-        case 3:
-          break;
-        case 4:
-          systemManager.setDate();
-          break;
+      try {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        int answer = Integer.parseInt(reader.readLine());
+        switch (answer) {
+          case 1:
+            break;
+          case 2:
+            systemManager.closeMarket();
+            break;
+          case 3:
+            break;
+          case 4:
+            systemManager.setDate();
+            break;
+          case 5:
+            exit = true;
+            break;
+        }
+      } catch (Exception e) {
+        System.err.println(e);
       }
-    } catch (Exception e) {
-      System.err.println(e);
     }
   }
 }
