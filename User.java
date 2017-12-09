@@ -2,7 +2,7 @@ import java.sql.*;
 
 public class User{
 	private String username;
-	private float balance;
+	private double balance;
 	private String name;
 	private String ssn;
 	private int taxId;
@@ -24,7 +24,7 @@ public class User{
 		this.taxId = taxid; 
 	}
 
-	public void setBalance(float value){
+	public void setBalance(double value){
 		try{
 			Class.forName("com.mysql.jdbc.Driver");
 	    Connection connection = DriverManager.getConnection(HOST, USER, PWD);
@@ -45,7 +45,7 @@ public class User{
 		this.username = username;
 	}
 
-	public float getBalance(){ return this.balance; }
+	public double getBalance(){ return this.balance; }
 
 	public String getName(){ return this.name; }
 

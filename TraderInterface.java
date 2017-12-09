@@ -211,6 +211,7 @@ public class TraderInterface {
               case 4:
                 break;
               case 5:
+                traderifc.showBalance();
                 break;
               case 6:
                 break;
@@ -243,6 +244,8 @@ public class TraderInterface {
         + taxId + ")";
       ResultSet resultSet = statement.executeQuery(query);
       if (resultSet.isBeforeFirst()) {
+        resultSet.absolute(1);
+        this.user.setBalance(resultSet.getFloat(1));
         statement.close();
         connection.close();
         // Matching row in the database
