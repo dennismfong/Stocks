@@ -34,7 +34,7 @@ public class SystemManager {
         query = "insert into StockInstance (date, closingPrice, symbol) VALUES (?,?,?)";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setDate(1, dateDB);
-        preparedStatement.setFloat(2, resultSet.getFloat(3));
+        preparedStatement.setDouble(2, resultSet.getFloat(3));
         preparedStatement.setString(3, resultSet.getString(1));
         preparedStatement.executeUpdate();
 
