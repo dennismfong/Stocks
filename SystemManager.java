@@ -19,20 +19,18 @@ public class SystemManager {
   }
 
   public void closeMarket() {
-
-  }
-
-  public void setStockPrice() {
     try {
       Class.forName("com.mysql.jdbc.Driver");
       Connection connection = DriverManager.getConnection(this.HOST,
               this.USER,
               this.PWD);
-
       connection.close();
     } catch (Exception e) {
-
+      System.err.println(e);
     }
+  }
+
+  public void setStockPrice() {
 
   }
 
