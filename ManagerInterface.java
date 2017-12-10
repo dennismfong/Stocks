@@ -1,4 +1,3 @@
-import javax.xml.transform.Result;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.*;
@@ -99,7 +98,7 @@ public class ManagerInterface {
         int answer = Integer.parseInt(reader.readLine());
         switch (answer) {
           case 1:
-            System.out.println("\n");
+            managerifc.addAllInterest();
             break;
           case 2:
             System.out.println("\nEnter username of customer");
@@ -318,7 +317,23 @@ public class ManagerInterface {
 //  }
 
   public void addAllInterest() {
-	  
+	  try {
+	    Class.forName("com.mysql.jdbc.Driver");
+	    Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+	    String query = "select aid from MarketAccount";
+	    Statement statement = connection.createStatement();
+	    ResultSet resultSet = statement.executeQuery(query);
+
+	    while (resultSet.next()) {
+	      int aid = resultSet.getInt(1);
+	      addInterest(aid);
+      }
+
+      statement.close();
+	    connection.close();
+    } catch (Exception e) {
+	    System.err.println(e);
+    }
   }
 
   public void addInterest(int aid) {
@@ -328,37 +343,43 @@ public class ManagerInterface {
 
       java.util.Date currDate = systemManager.getDate();
       java.sql.Date dateDB = new java.sql.Date(currDate.getTime());
-      String query = "select balance from BalanceHistory where aid = ? and MONTH(t.date) = MONTH(?) and YEAR(t.date) = YEAR(?)";
+      String query = "select balance from BalanceHistory b where b.aid = ? and MONTH(b.date) = MONTH(?) and YEAR(b.date) = YEAR(?)";
       PreparedStatement preparedStatement = connection.prepareStatement(query);
       preparedStatement.setInt(1, aid);
       preparedStatement.setDate(2, dateDB);
-      preparedStatement.setDate(2, dateDB);
+      preparedStatement.setDate(3, dateDB);
       ResultSet resultSet = preparedStatement.executeQuery();
 
-      double sum = 0;
+      double sum = 0.0;
       Calendar c = Calendar.getInstance();
       c.setTime(currDate);
-      double days = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+      int days = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+      c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
+      java.util.Date temp = c.getTime();
+      java.sql.Date lastDay = new java.sql.Date(temp.getTime());
       while (resultSet.next()) {
         sum += resultSet.getDouble(1);
       }
+      System.out.println("sum " + sum);
 
       query = "select balance, taxId from Account where aid = ?";
       PreparedStatement lastBalance = connection.prepareStatement(query);
+      lastBalance.setInt(1, aid);
       ResultSet balanceSet = lastBalance.executeQuery();
       balanceSet.next();
       double lastDayBalance = balanceSet.getDouble(1);
       int taxId = balanceSet.getInt(2);
       sum += lastDayBalance;
-      double dailyAverage = sum/days;
+      System.out.println("new sum " + sum);
+      double dailyAverage = sum/(double)days;
       double interest = dailyAverage * 0.03;
 
       // Create record in the balance history
       query = "insert into BalanceHistory values(?,?,?)";
       PreparedStatement insert = connection.prepareStatement(query);
       insert.setInt(1, aid);
-      insert.setDate(2, dateDB);
-      insert.setDouble(3, lastDayBalance);
+      insert.setDate(2, lastDay);
+      insert.setDouble(3, lastDayBalance + interest);
       insert.executeUpdate();
 
       // Update the user's balance in account
