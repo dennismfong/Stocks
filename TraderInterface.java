@@ -869,18 +869,17 @@ public class TraderInterface {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String title = reader.readLine();
 
-        String query = "select rating, production_year from Movies where title = \"" + title + "\"";
+        String query = "select author, review from Movies M join Reviews R on R.movie_id = M.id where title = \"" + title + "\"";
         ResultSet resultSet = statement.executeQuery(query);
 
-        if(resultSet.next()){
-          float rating = resultSet.getFloat(1);
-          int production_year = resultSet.getInt(2);
-          System.out.println("Produced in: "+production_year+"\nMovie Rating: "+rating);
-          break;
+        System.out.println("--------\nReviews for movie: "+title);
+        while(resultSet.next()){
+          String author = resultSet.getString(1);
+          String review = resultSet.getString(2);
+          System.out.println(author +": "+review);
         }
-        else{
-          System.out.println("ERROR: NO SUCH MOVIE IN DATABASE");
-        }
+        System.out.println("--------");
+        break;
       }
       statement.close();
       connection.close();
