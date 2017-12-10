@@ -63,7 +63,50 @@ public class ManagerInterface {
 				if (!loggedIn) {
 					System.out.println("Sorry, that user was not found, please try again");
 				}
+				else {
+          managerifc.user.setUsername(username);
+          managerifc.user.setInfo(username);
+        }
 			} catch (Exception e) {
+				System.err.println(e);
+			}
+		}
+
+		boolean exitPortal = false;
+		while (!exitPortal) {
+			// Start of application logic
+			System.out.println("Welcome " + managerifc.user.getName() + " to your portal!");
+			System.out.println("Issue commands using the number key associated with your request");
+			System.out.println("\n\n"
+							+ "\n1.     Add interest"
+							+ "\n2.     Generate monthly statement"
+							+ "\n3.     List active customers"
+							+ "\n4.     Generate Government Drug & Tax Evasion Report (DTER)"
+							+ "\n5.     Customer Report"
+							+ "\n6.     Delete Transactions"
+							+ "\n7.    exit"
+							+ "\n\n"
+			);
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+			try {
+        int answer = Integer.parseInt(reader.readLine());
+        switch (answer) {
+          case 1:
+            break;
+          case 2:
+            break;
+          case 3:
+            break;
+          case 4:
+            break;
+          case 5:
+            break;
+          case 7:
+            exitPortal = true;
+            break;
+        }
+      } catch (Exception e) {
 				System.err.println(e);
 			}
 		}
