@@ -1,6 +1,7 @@
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.sql.*;
+import java.util.ArrayList;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -222,6 +223,7 @@ public class TraderInterface {
                 traderifc.buyStock();
                 break;
               case 4:
+                traderifc.sellStock();
                 break;
               case 5:
                 traderifc.showBalance();
@@ -578,6 +580,37 @@ public class TraderInterface {
               
               System.out.printf("SUCCESSFULLY PURCHASED "+amount+" SHARES OF "+symbol+" FOR "+totalPrice+" DOLLARS. REMAINING BALANCE:  %.2f \n", this.user.getBalance());
         
+              query = "SELECT * FROM StockBalance where buyPrice = "+currentPrice
+                + " and aid = "+aid 
+                + " and symbol = \""+symbol+"\"";
+              resultSet = statement.executeQuery(query);
+
+              if(!resultSet.next()){
+                String updateString = "INSERT INTO StockBalance(aid, symbol, quantity, buyPrice, totalValue) VALUES " +
+                "(?, ?, ?, ?, ?)";
+                preparedStatement = connection.prepareStatement(updateString);
+                preparedStatement.setInt(1, aid);
+                preparedStatement.setString(2, symbol);
+                preparedStatement.setInt(3, amount);
+                preparedStatement.setDouble(4, currentPrice);
+                preparedStatement.setDouble(5, totalPrice);
+                preparedStatement.executeUpdate();
+              }
+
+              else{
+                query = "UPDATE StockBalance SET quantity = quantity +"+amount
+                + " where buyPrice = "+currentPrice
+                + " and aid = "+aid 
+                + " and symbol = \""+symbol+"\"";
+                statement.executeUpdate(query);
+
+                query = "UPDATE StockBalance SET totalValue = totalValue +"+(totalPrice-20)
+                + " where buyPrice = "+currentPrice
+                + " and aid = "+aid 
+                + " and symbol = \""+symbol+"\"";
+                statement.executeUpdate(query);
+              }
+
               preparedStatement.close();
               statement.close();
               connection.close();
@@ -600,6 +633,7 @@ public class TraderInterface {
 
   public void sellStock() {
     try {
+      int aid = this.user.getMarketAccountID();
       Class.forName("com.mysql.jdbc.Driver");
       Connection connection = DriverManager.getConnection(HOST, USER, PWD);
       Statement statement = connection.createStatement();
@@ -607,74 +641,120 @@ public class TraderInterface {
         System.out.println("Which stock would you like to sell?");
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String symbol = reader.readLine();
-        String query = "select * from Stock where symbol = \"" + symbol + "\"";      
+        String query = "select buyPrice, quantity, totalValue from StockBalance where aid = "+aid+" and symbol = \"" + symbol + "\"";      
         ResultSet resultSet = statement.executeQuery(query);
-        if (resultSet.isBeforeFirst()) {
+        if (resultSet.isBeforeFirst()){
+          ArrayList<Double> stockValues = new ArrayList<Double>();
+          ArrayList<Integer> stockQuantity = new ArrayList<Integer>();
+          ArrayList<Double> totalValues = new ArrayList<Double>();
+          while(resultSet.next()){
+            double value = resultSet.getDouble(1);
+            int quantity = resultSet.getInt(2);
+            double totalValue = resultSet.getDouble(3);
+            stockValues.add(value);
+            stockQuantity.add(quantity);
+            totalValues.add(totalValue);
+          }
+          query = "select currentPrice from Stock where symbol = \"" + symbol + "\"";
+          resultSet = statement.executeQuery(query);
           resultSet.next();
+          double currentPrice = resultSet.getDouble(1);
+          System.out.printf("CURRENT VALUE OF STOCK "+symbol+": %.2f DOLLARS \n", currentPrice);
+          System.out.println("Which share value of your stock would you like to sell? Enter the corresponding row number.");
+          int i = 0;
+          for(double val: stockValues){
+            System.out.println(i+". "+val+" DOLLARS. QUANTITY OWNED: "
+              +stockQuantity.get(i)+ " SHARES. TOTAL VALUE: "+ totalValues.get(i) +" DOLLARS.");
+            i++;
+          }
           while(true){
-            double currentPrice = resultSet.getDouble(3);
-            double numStocks = resultSet.getInt(4);
-            System.out.println("STOCK: "+symbol+". CURRENT PRICE: "+resultSet.getDouble(3)+" DOLLARS. YOUR AVAILABLE SHARES: "+ 1);//userShares;
-            System.out.println("How many shares would you like to sell? Enter 0 in order to change stock name. (There is $20 commission with every transaction)");
             reader = new BufferedReader(new InputStreamReader(System.in));
-            int amount = Integer.parseInt(reader.readLine());
-            double totalPrice = currentPrice * amount + 20;
-            if (amount == 0){
+            int row = Integer.parseInt(reader.readLine());
+            if(row > i || row < 0)
+              System.out.println("INVALID ROW.");
+            else{
+              double targetVal = stockValues.get(row);
+              double targetQuantity = stockQuantity.get(row);
+              System.out.println("QUANTITES OF STOCK "+symbol+" OWNED AT VALUE "+targetVal+" DOLLARS: "+targetQuantity);
+              System.out.println("How many shares of your stock would you like to sell? There is a $20 commission with every transaction. Enter 0 to go back");
+              while(true){
+                reader = new BufferedReader(new InputStreamReader(System.in));
+                int quantity = Integer.parseInt(reader.readLine());
+                double totalPrice = quantity * currentPrice;
+                if(quantity == 0) break;
+                if(quantity > targetQuantity)
+                  System.out.println("CANNOT SELL "+quantity+" SHARES: NOT ENOUGH IN BALANCE.");
+                else if (quantity > 0) {
+                  if(this.user.getBalance()+totalPrice-20 < 0){
+                    System.out.println("CANNOT SELL "+quantity+" SHARES: TRANSACTION WILL RESULT IN BALANCE LESS THAN 0! (REMEMBER THERE IS $20 COMMISSION FEE)");
+                  }
+                  else{
+                    query = "UPDATE Stock SET numStocks = numStocks + "+ quantity +" WHERE symbol = \"" + symbol + "\"";  
+                    statement.executeUpdate(query);
+                  
+                    this.user.setBalance(this.user.getBalance()+totalPrice-20);
+                    
+                    query = "UPDATE StockBalance SET quantity = quantity - "+quantity+" WHERE aid = "+aid
+                      +" AND symbol = \"" + symbol + "\" AND buyPrice = "+targetVal; 
+                    statement.executeUpdate(query);
+
+                    query = "select quantity from StockBalance where aid = "+aid
+                      +" AND symbol = \"" + symbol + "\" AND buyPrice = "+targetVal; 
+                    resultSet = statement.executeQuery(query);
+                    resultSet.next();
+                    if(resultSet.getInt(1) == 0){
+                      query = "DELETE FROM StockBalance WHERE aid = "+aid
+                        +" AND symbol = \"" + symbol + "\" AND buyPrice = "+targetVal; 
+                      statement.executeUpdate(query);
+                    }
+
+                    query = "select * from MarketDate";
+                    resultSet = statement.executeQuery(query);
+                    resultSet.next();
+                    Date date = resultSet.getDate(1);
+                    java.sql.Date dateDB = new java.sql.Date(date.getTime());
+
+                    query = "select COUNT(*) from Transaction";
+                    resultSet = statement.executeQuery(query);
+                    resultSet.next();
+                    int tid = resultSet.getInt(1) + 1;      
+                    String transactionString = "INSERT INTO Transaction(tid, type, date, aid) VALUES " +
+                    "(?, ?, ?, ?)";
+
+                    PreparedStatement preparedStatement = connection.prepareStatement(transactionString);
+                    preparedStatement.setInt(1, tid);
+                    preparedStatement.setString(2, " Stock sold ");
+                    preparedStatement.setDate(3, dateDB);
+                    preparedStatement.setInt(4, aid);
+                    preparedStatement.executeUpdate();
+
+                    transactionString = "INSERT INTO StockTransaction(tid, symbol, quantity, price, totalPrice) VALUES " +
+                    "(?, ?, ?, ?, ?)";
+
+                    preparedStatement = connection.prepareStatement(transactionString);
+                    preparedStatement.setInt(1, tid);
+                    preparedStatement.setString(2, symbol);
+                    preparedStatement.setInt(3, quantity);
+                    preparedStatement.setDouble(4, currentPrice);
+                    preparedStatement.setDouble(5, totalPrice);
+                    preparedStatement.executeUpdate();
+                    
+                    System.out.printf("SUCCESSFULLY SOLD "+quantity+" SHARES OF "+symbol+" FOR "+totalPrice+" DOLLARS. NEW BALANCE:  %.2f \n", this.user.getBalance());
+              
+                    preparedStatement.close();
+                    statement.close();
+                    connection.close();
+                    break; 
+                  }
+                }
+              }
               break;
-            } else if (amount > 0) {
-              query = "UPDATE Stock SET numStocks = "+ (numStocks+amount) +" WHERE symbol = \"" + symbol + "\"";  
-              statement.executeUpdate(query);
-              
-              this.user.setBalance(this.user.getBalance() - totalPrice);
-              int aid = this.user.getMarketAccountID();
-              
-              query = "select * from MarketDate";
-              resultSet = statement.executeQuery(query);
-              resultSet.next();
-              Date date = resultSet.getDate(1);
-              java.sql.Date dateDB = new java.sql.Date(date.getTime());
-
-              query = "select COUNT(*) from Transaction";
-              resultSet = statement.executeQuery(query);
-              resultSet.next();
-              int tid = resultSet.getInt(1) + 1;      
-
-              String transactionString = "INSERT INTO Transaction(tid, type, date, aid) VALUES " +
-              "(?, ?, ?, ?)";
-
-              PreparedStatement preparedStatement = connection.prepareStatement(transactionString);
-              preparedStatement.setInt(1, tid);
-              preparedStatement.setString(2, " Stock sold ");
-              preparedStatement.setDate(3, dateDB);
-              preparedStatement.setInt(4, aid);
-              preparedStatement.executeUpdate();
-
-              transactionString = "INSERT INTO StockTransaction(tid, symbol, quantity, price, totalPrice) VALUES " +
-              "(?, ?, ?, ?, ?)";
-
-              preparedStatement = connection.prepareStatement(transactionString);
-              preparedStatement.setInt(1, tid);
-              preparedStatement.setString(2, symbol);
-              preparedStatement.setInt(3, amount);
-              preparedStatement.setDouble(4, currentPrice);
-              preparedStatement.setDouble(5, totalPrice);
-              preparedStatement.executeUpdate();
-              
-              System.out.printf("SUCCESSFULLY SOLD "+amount+" SHARES OF "+symbol+" FOR "+totalPrice+" DOLLARS. NEW BALANCE:  %.2f \n", this.user.getBalance());
-        
-              preparedStatement.close();
-              statement.close();
-              connection.close();
-              break;
-            }
-            else {
-              System.out.println("ENTER A VALUE OVER 0");
             }
           }
-        break;
+          break;
         }
         else{
-          System.out.println("NO SUCH STOCK: "+symbol);
+          System.out.println("YOU DO NOT OWN ANY SHARES OF STOCK "+symbol);
         }
       }
     } catch (Exception e) {
