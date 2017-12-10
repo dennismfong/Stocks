@@ -229,6 +229,7 @@ public class TraderInterface {
               case 6:
                 break;
               case 7:
+                traderifc.listStockDetails();
                 break;
               case 8:
                 break;
@@ -446,26 +447,61 @@ public class TraderInterface {
   }
 
   public void listStockDetails() {
-    try {
+    try {        
       Class.forName("com.mysql.jdbc.Driver");
       Connection connection = DriverManager.getConnection(HOST, USER, PWD);
-
       Statement statement = connection.createStatement();
+      while(true){
+        System.out.println("Which stock would you like to view? Enter \"exit\" to leave search.");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String symbol = reader.readLine();
+        if(symbol == "exit")
+          break;
+        String query = "select * from Stock where symbol = \"" + symbol + "\"";
+        ResultSet resultSet = statement.executeQuery(query);
+        if (!resultSet.isBeforeFirst()) {
+            System.out.println("CANNOT FIND INFORMATION FOR STOCK: "+symbol);
+        }
+        else {
+          resultSet.next();
+          double openingPrice = resultSet.getDouble(2);
+          double currentPrice = resultSet.getDouble(3);
+          int numStocks = resultSet.getInt(4);
+          int adid = resultSet.getInt(5);
+          
+          System.out.println("----STATISTICS FOR STOCK "+symbol+"----");
+          System.out.println("OPENING PRICE: " + openingPrice);
+          System.out.println("CURRENT PRICE: " + currentPrice);
+          System.out.println("SHARES AVAILABLE: " + numStocks);
 
-      String query = "select currentPrice from Stock where Stock.symbol = " + stock;
-      ResultSet resultSet = statement.executeQuery(query);
-      float currentPrice = resultSet.getFloat(1);
-      System.out.println("CURRENT PRICE FOR STOCK " + stock + ": " + currentPrice);
+          query = "select * from ActorDirector where adid = "+adid;
+          resultSet = statement.executeQuery(query);
+          resultSet.next();
+          String adname = resultSet.getString(1);
+          Date dob = resultSet.getDate(2);
 
-      //select * from ActorDirector where ActorDirector.symbol = stock;
-      String query_2 = "select * from ActorDirector where ActorDirector.symbol = " + stock;
-      ResultSet resultSet_2 = statement.executeQuery(query);
-      System.out.println("STOCK DETAILS");
-      ResultSetMetaData rsmd = resultSet.getMetaData();
-      int numColumns = rsmd.getColumnCount();
-      for (int i = 1; i <= numColumns; i++) {
-        System.out.println(rsmd.getColumnName(i) + " " + resultSet.getString(i));
-        System.out.print(", ");
+          System.out.println("\n----INFORMATION ABOUT STOCK "+symbol+"----");
+          System.out.println("STAR NAME: " + adname);
+          System.out.println("DATE OF BIRTH: " + dob);
+
+          query = "select * from Contract where adid = "+adid;
+          resultSet = statement.executeQuery(query);
+
+          System.out.println("\n----CONTRACTS FOR "+adname+"----");
+
+          while(resultSet.next()){
+            String movieTitle = resultSet.getString(1);
+            String role = resultSet.getString(3);
+            int year = resultSet.getInt(4);
+            double value = resultSet.getDouble(5);
+
+            System.out.println("MOVIE TITLE: " + movieTitle);
+            System.out.println("ROLE: " + role);
+            System.out.println("YEAR: " + year);
+            System.out.println("CONTRACT VALUE: " + value + "\n");
+          }
+          break;
+        }
       }
       statement.close();
       connection.close();
