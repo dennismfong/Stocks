@@ -221,13 +221,52 @@ public class SystemManager {
               populateStatement.setDate(2, dateToAdd);
               populateStatement.setDouble(3, balance);
               populateStatement.executeUpdate();
+              populateStatement.close();
             }
           }
 
           // Populate the StockInstance rows
+          query = "select symbol, currentPrice from Stock";
+          statement = connection.createStatement();
+          resultSet = statement.executeQuery(query);
+          while (resultSet.next()) {
+            String symbol = resultSet.getString(1);
+            double closingPrice = resultSet.getDouble(2);
+            query = "select MAX(date) from StockInstance where symbol = ?";
+            preparedStatement = connection1.prepareStatement(query);
+            preparedStatement.setString(1, symbol);
+            ResultSet resultSet1 = preparedStatement.executeQuery();
+            resultSet1.next();
+            java.util.Date maxDate = resultSet1.getDate(1);
+            Calendar c = Calendar.getInstance();
+            c.setTime(maxDate);
+            c.add(Calendar.DATE, 1);
+            java.util.Date dateBounds = c.getTime();
+            while (dateBounds.before(currDate)) {
+              // Add one to the date
+              c = Calendar.getInstance();
+              c.setTime(maxDate);
+              c.add(Calendar.DATE, 1);
+              maxDate = c.getTime();
+              java.sql.Date dateToAdd = new java.sql.Date(maxDate.getTime());
+              c.setTime(dateBounds);
+              c.add(Calendar.DATE, 1);
+              dateBounds = c.getTime();
+              // Populate all the rows for BalanceHistory
+              query = "insert into StockInstance values(?,?,?)";
+              PreparedStatement populateStatement = connection1.prepareStatement(query);
+              populateStatement.setDate(1, dateToAdd);
+              populateStatement.setDouble(2, closingPrice);
+              populateStatement.setString(3, symbol);
+              populateStatement.executeUpdate();
+              populateStatement.close();
+            }
+          }
 
+          statement.close();
           preparedStatement.close();
           connection.close();
+          connection1.close();
         } catch (Exception e) {
           System.err.println(e);
         }
