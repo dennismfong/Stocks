@@ -189,7 +189,7 @@ public class TraderInterface {
       boolean exitPortal = false;
       while (!exitPortal) {
         // Start of application logic
-        System.out.println("Welcome " + traderifc.user.getName() + " to your portal!");
+        System.out.println("\nWelcome " + traderifc.user.getName() + " to your portal!");
         System.out.println("Issue commands using the number key associated with your request");
         System.out.println("\n\n"
                 + "\n1.     Deposit"
@@ -272,7 +272,8 @@ public class TraderInterface {
       else {
         statement.close();
         connection.close();
-        System.out.println("It appears you do not have a market account in our database. Would you like to open one? (You must deposit at least 1000 dollars when opening a new market account)");
+        System.out.println("It appears you do not have a market or stock account in our database.\n" 
+        +"Would you like to open one? (You must deposit at least 1000 dollars to your market account when opening new accounts)");
         System.out.println("\n\n"
                 + "\n1.     Yes"
                 + "\n2.     No"
@@ -282,7 +283,7 @@ public class TraderInterface {
         int answer = Integer.parseInt(reader.readLine());
         switch (answer) {
             case 1:
-              makeNewAccount(taxId,0);
+              makeNewAccounts(taxId);
               return true;
             case 2:
               break;
@@ -295,12 +296,15 @@ public class TraderInterface {
     return false;
   }
 
-  public void makeNewAccount(int taxId, int mode) { //0 = market, 1 = stock
-    while(true){
-      try {
+  public void makeNewAccounts(int taxId) { //0 = market, 1 = stock
+    try{
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+      Statement statement = connection.createStatement();
+      
+      while(true){
         int aid = ThreadLocalRandom.current().nextInt(0, 10001);
-        Connection connection = DriverManager.getConnection(HOST, USER, PWD);
-        Statement statement = connection.createStatement();
+
         String query = "select * from Account where aid = " + aid;
         ResultSet resultSet = statement.executeQuery(query);
         if (resultSet.isBeforeFirst()) {
@@ -325,14 +329,44 @@ public class TraderInterface {
           preparedStatement.setDouble(1, 0.03);
           preparedStatement.setInt(2, aid);
           preparedStatement.executeUpdate();
+          break;
+        }
+      }
+      while(true){
+        int aid = ThreadLocalRandom.current().nextInt(0, 10001);
+
+        String query = "select * from Account where aid = " + aid;
+        ResultSet resultSet = statement.executeQuery(query);
+        if (resultSet.isBeforeFirst()) {
+          ;  
+        }
+        else {
+          String registerString = "insert into Account"
+            + "(balance, aid, taxId) VALUES "
+            + "(?,?,?)";
+
+          PreparedStatement preparedStatement = connection.prepareStatement(registerString);
+          preparedStatement.setDouble(1, 0);
+          preparedStatement.setInt(2, aid);
+          preparedStatement.setInt(3, taxId);
+          preparedStatement.executeUpdate();
+
+          registerString = "insert into StockAccount"
+            + "(aid) VALUES "
+            + "(?)";
+
+          preparedStatement = connection.prepareStatement(registerString);
+          preparedStatement.setInt(1, aid);
+          preparedStatement.executeUpdate();
           preparedStatement.close();
           statement.close();
           connection.close();
+          System.out.println("ACCOUNTS SUCCESFFULY MADE"); 
           return;
         }
-      } catch (Exception e) {
-        System.out.println(e);
       }
+    } catch (Exception e) {
+      System.out.println(e);
     }
   }
 
@@ -351,6 +385,7 @@ public class TraderInterface {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
       double money = Double.parseDouble(reader.readLine());
       //UPDATE MarketAccount SET Balance = Balance + money WHERE aid = this.aid";
+      
       this.user.setBalance(this.user.getBalance()+money);
       int aid = this.user.getMarketAccountID();
       Class.forName("com.mysql.jdbc.Driver");
@@ -548,7 +583,7 @@ public class TraderInterface {
               statement.executeUpdate(query);
               
               this.user.setBalance(this.user.getBalance() - totalPrice - 20);
-              int aid = this.user.getMarketAccountID();
+              int aid = this.user.getStockAccountID();
               
               query = "select * from MarketDate";
               resultSet = statement.executeQuery(query);
@@ -638,7 +673,7 @@ public class TraderInterface {
 
   public void sellStock() {
     try {
-      int aid = this.user.getMarketAccountID();
+      int aid = this.user.getStockAccountID();
       Class.forName("com.mysql.jdbc.Driver");
       Connection connection = DriverManager.getConnection(HOST, USER, PWD);
       Statement statement = connection.createStatement();
@@ -770,12 +805,12 @@ public class TraderInterface {
 
   public void getStockTransHistory(){
     try {
-      int aid = this.user.getMarketAccountID();
+      int aid = this.user.getStockAccountID();
       Class.forName("com.mysql.jdbc.Driver");
       Connection connection = DriverManager.getConnection(HOST, USER, PWD);
       Statement statement = connection.createStatement();
 
-      String query = "select * from Transaction t JOIN StockTransaction s ON t.tid = s.tid WHERE t.aid = aid";
+      String query = "select * from Transaction t JOIN StockTransaction s ON t.tid = s.tid WHERE t.aid = " + aid;
       ResultSet resultSet = statement.executeQuery(query);
 
       System.out.println("DISPLAYING ALL STOCK TRANSACTIONS IN PAST MONTH");

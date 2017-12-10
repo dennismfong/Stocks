@@ -107,6 +107,7 @@ public class ManagerInterface {
             managerifc.generateMonthlyStatement(username);
             break;
           case 3:
+          	managerifc.listActiveCustomer();
             break;
           case 4:
             break;
@@ -217,15 +218,29 @@ public class ManagerInterface {
 
 	public void generateCustomerReport(String username){
 		try {
+			System.out.println("CUSTOMER REPORT FOR: " + username);
+
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 			Statement statement = connection.createStatement();
-
-			String query = "select * from Account a where a.username = \"" + username + "\" and a.aid IN( select aid from StockAccount sa where sa.aid = a.aid) join select * from Account a where a.username = \"" + username + "\" and a.aid IN( select aid from MarketAccount ma where ma.aid = a.aid)";
+	
+			System.out.println("----MARKET ACCOUNT----");
+			String query = "select * from Account a join Customer c on c.taxId = a.taxId where c.username  = \"" + 
+			username + "\" and a.aid IN( select aid from MarketAccount ma where ma.aid = a.aid)";
+			// "select * from Account a join Customer c on c.taxId = a.taxId where c.username = \"" + 
+			// username + "\" and a.aid IN( select aid from StockAccount sa where sa.aid = a.aid) union " +
 			ResultSet resultSet = statement.executeQuery(query);
-			System.out.println("CUSTOMER REPORT FOR: " + username + "\n");
 			while (resultSet.next()) {
-				System.out.println(resultSet.getString(1) + "|" + resultSet.getInt(2) + "|" + resultSet.getString(3));
+				System.out.printf("CURRENT BALANCE: %.2f DOLLARS \n", resultSet.getDouble(2));
+			}
+			query = "select symbol, SUM(quantity), SUM(totalValue) from StockBalance where aid in " +
+			"(select a.aid from Account a join Customer c on c.taxId = a.taxId where c.username = \"" + 
+			username + "\" and a.aid IN( select sa.aid from StockAccount sa))" +
+			"group by symbol";
+			resultSet = statement.executeQuery(query);
+			System.out.println("---STOCK ACCOUNT VALUES----");	
+			while (resultSet.next()) {
+				System.out.printf("OWNS "+resultSet.getInt(2)+" SHARES OF "+resultSet.getString(1)+" WITH TOTAL VALUE OF %.2f DOLLARS \n", resultSet.getDouble(3));
 			}
 			statement.close();
 			connection.close();
@@ -408,6 +423,36 @@ public class ManagerInterface {
 
 			System.out.println("ALL TRANSACTIONS DELETED");
 		} catch (Exception e) {
+			System.err.println(e);
+		}
+	}
+
+	public void listActiveCustomer(){
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+
+			Statement statement = connection.createStatement();
+	    String query = "select cname from Customer C join Account A on C.taxId = "+
+	     "A.taxId where A.aid in (select aid from Transaction T join StockTransaction ST on T.tid = ST.tid where "+ 
+	     "MONTH(T.date) = MONTH(?) and YEAR(T.date) = YEAR(?) group by T.aid having SUM(quantity) > 10000)";
+
+
+      java.util.Date currDate = systemManager.getDate();
+      java.sql.Date dateDB = new java.sql.Date(currDate.getTime());
+      PreparedStatement preparedStatement = connection.prepareStatement(query);
+      preparedStatement.setDate(1, dateDB);
+      preparedStatement.setDate(2, dateDB);
+      ResultSet resultSet = preparedStatement.executeQuery();
+
+      System.out.println("----LIST OF ACTIVE CUSTOMERS IN THE CURRENT MONTH----");
+
+      while(resultSet.next()){
+      	String cname = resultSet.getString(1);
+				System.out.println(cname);
+      }	
+    }
+		catch (Exception e) {
 			System.err.println(e);
 		}
 	}
