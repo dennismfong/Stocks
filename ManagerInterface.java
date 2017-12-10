@@ -117,6 +117,7 @@ public class ManagerInterface {
             managerifc.generateCustomerReport(username2);
             break;
           case 6:
+          	managerifc.deleteTransactions();
             break;
           case 7:
             exitPortal = true;
@@ -403,20 +404,20 @@ public class ManagerInterface {
     }
   }
 
-	public void deleteTransaction(){
+	public void deleteTransactions(){
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 			Statement statement = connection.createStatement();
 
 			String query = "delete from Transaction";
-			ResultSet resultSet = statement.executeQuery(query);
+			statement.executeUpdate(query);
 
 			String query_2 = "delete from MarketTransaction";
-			ResultSet resultSet_2 = statement.executeQuery(query);
+			statement.executeUpdate(query);
 
 			String query_3 = "delete from StockTransaction";
-			ResultSet resultSet_4 = statement.executeQuery(query);
+			statement.executeUpdate(query);
 
 			statement.close();
 			connection.close();
