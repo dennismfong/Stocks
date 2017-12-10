@@ -1,3 +1,4 @@
+import javax.xml.transform.Result;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.*;
@@ -7,10 +8,12 @@ public class ManagerInterface {
 	private String HOST = Config.host;
 	private String USER = Config.user;
 	private String PWD = Config.pwd;
+	private SystemManager systemManager;
 
 	public ManagerInterface() {
-		user = new User();
-	}
+    user = new User();
+    systemManager = new SystemManager();
+  }
 
 	public boolean login(String username, String password) {
 		try {
@@ -52,7 +55,7 @@ public class ManagerInterface {
 		ManagerInterface managerifc = new ManagerInterface();
 
 		boolean loggedIn = false;
-		System.out.println("Welcome to the Manager Interface of StarsRUs");
+		System.out.println("\n\nWelcome to the Manager Interface of StarsRUs");
 		while (!loggedIn) {
 			try {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -77,7 +80,7 @@ public class ManagerInterface {
 		boolean exitPortal = false;
 		while (!exitPortal) {
 			// Start of application logic
-			System.out.println("Welcome " + managerifc.user.getName() + " to your portal!");
+			System.out.println("\n\nWelcome " + managerifc.user.getName() + " to your portal!");
 			System.out.println("Issue commands using the number key associated with your request");
 			System.out.println("\n\n"
 							+ "\n1.     Add interest"
@@ -97,6 +100,9 @@ public class ManagerInterface {
           case 1:
             break;
           case 2:
+            System.out.println("\nEnter username of customer");
+            String username = reader.readLine();
+            managerifc.generateMonthlyStatement(username);
             break;
           case 3:
             break;
@@ -120,19 +126,29 @@ public class ManagerInterface {
 
 			Statement statement = connection.createStatement();
 
-			String query = "select cname, email from Customer where Customer.username = \"" + username + "\"";
+			String query = "select cname, email, taxId from Customer where Customer.username = \"" + username + "\"";
 			ResultSet resultSet = statement.executeQuery(query);
+			resultSet.next();
 			String cname = resultSet.getString(1);
 			String email = resultSet.getString(2);
+			int taxId = resultSet.getInt(3);
 
-			String query_2 = "select * from Transaction t, where t.aid IN( SELECT aid FROM Account a WHERE a.username = \"" + username + "\")";
-			ResultSet resultSet_2 = statement.executeQuery(query);
+      String query_2 = "select * from Transaction t where t.aid in (select aid from Account a where a.taxId = ?) "
+              + "and MONTH(t.date) = MONTH(?) and YEAR(t.date) = YEAR(?) and DAY(t.date) < DAY(?)";
+
+      java.sql.Date dateDB = new java.sql.Date(systemManager.getDate().getTime());
+      PreparedStatement preparedStatement = connection.prepareStatement(query_2);
+      preparedStatement.setInt(1, taxId);
+      preparedStatement.setDate(2, dateDB);
+      preparedStatement.setDate(3, dateDB);
+      preparedStatement.setDate(4, dateDB);
+      ResultSet resultSet_2 = preparedStatement.executeQuery();
 
 			System.out.println("MONTHLY STATEMENT FOR: " + cname + " (" + email + ")\n");
-			while (resultSet.next()) {
-				System.out.println(resultSet.getString(1) + "|" + resultSet.getString(2) + "|" + resultSet.getDate(3) + "|" + resultSet.getString(4));
+			while (resultSet_2.next()) {
+				System.out.println(resultSet_2.getString(1) + "|" + resultSet_2.getString(2) + "|" + resultSet_2.getDate(3) + "|" + resultSet_2.getString(4));
 			}
-			statement.close();
+      statement.close();
 			connection.close();
 		} catch (Exception e) {
 			System.err.println(e);

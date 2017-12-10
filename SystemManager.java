@@ -45,7 +45,7 @@ public class SystemManager {
     }
   }
 
-  public void openMarket() {
+  private void openMarket() {
     try {
       Class.forName("com.mysql.jdbc.Driver");
       Connection connection = DriverManager.getConnection(this.HOST,
@@ -63,7 +63,7 @@ public class SystemManager {
     }
   }
 
-  public void closeMarket() {
+  private void closeMarket() {
     try {
       Class.forName("com.mysql.jdbc.Driver");
       Connection connection = DriverManager.getConnection(this.HOST,
@@ -92,7 +92,7 @@ public class SystemManager {
     }
   }
 
-  public void setStockPrice() {
+  private void setStockPrice() {
     try {
       Class.forName("com.mysql.jdbc.Driver");
       Connection connection = DriverManager.getConnection(this.HOST,
@@ -146,7 +146,7 @@ public class SystemManager {
     return null;
   }
 
-  public void setDate() {
+  private void setDate() {
     try {
       StringBuilder sb = new StringBuilder();
       System.out.println("Enter in the year (ie. 2000)");
