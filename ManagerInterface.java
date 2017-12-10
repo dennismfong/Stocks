@@ -173,8 +173,8 @@ public class ManagerInterface {
 
 
 			System.out.println("MONTHLY STATEMENT FOR: " + cname + " (" + email + ")\n");
-      System.out.println("Starting Balance: " + startBalance);
-      System.out.println("End Balance: " + endBalance);
+      System.out.println("Starting Balance:   " + startBalance);
+      System.out.println("End Balance:        " + endBalance + "\n");
       while (resultSet_2.next()) {
 				System.out.println(resultSet_2.getString(1) + "|" + resultSet_2.getString(2) + "|" + resultSet_2.getDate(3) + "|" + resultSet_2.getString(4));
 			}
