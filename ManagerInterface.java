@@ -237,7 +237,7 @@ public class ManagerInterface {
 			// username + "\" and a.aid IN( select aid from StockAccount sa where sa.aid = a.aid) union " +
 			ResultSet resultSet = statement.executeQuery(query);
 			while (resultSet.next()) {
-				System.out.printf("CURRENT BALANCE: %.2f DOLLARS \n", resultSet.getDouble(2));
+				System.out.printf("CURRENT BALANCE: %.2f DOLLARS \n", resultSet.getDouble(1));
 			}
 			query = "select symbol, SUM(quantity), SUM(totalValue) from StockBalance where aid in " +
 			"(select a.aid from Account a join Customer c on c.taxId = a.taxId where c.username = \"" + 
