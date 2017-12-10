@@ -1,7 +1,7 @@
-import javax.xml.transform.Result;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.*;
+import java.util.*;
 
 public class ManagerInterface {
 	private User user;
@@ -134,9 +134,10 @@ public class ManagerInterface {
 			int taxId = resultSet.getInt(3);
 
       String query_2 = "select * from Transaction t where t.aid in (select aid from Account a where a.taxId = ?) "
-              + "and MONTH(t.date) = MONTH(?) and YEAR(t.date) = YEAR(?) and DAY(t.date) < DAY(?)";
+              + "and MONTH(t.date) = MONTH(?) and YEAR(t.date) = YEAR(?) and DAY(t.date) <= DAY(?)";
 
-      java.sql.Date dateDB = new java.sql.Date(systemManager.getDate().getTime());
+      java.util.Date currDate = systemManager.getDate();
+      java.sql.Date dateDB = new java.sql.Date(currDate.getTime());
       PreparedStatement preparedStatement = connection.prepareStatement(query_2);
       preparedStatement.setInt(1, taxId);
       preparedStatement.setDate(2, dateDB);
@@ -144,8 +145,37 @@ public class ManagerInterface {
       preparedStatement.setDate(4, dateDB);
       ResultSet resultSet_2 = preparedStatement.executeQuery();
 
+      resultSet_2.next();
+      int aid = resultSet_2.getInt(4);
+      resultSet_2.beforeFirst();
+
+      Calendar c = Calendar.getInstance();
+      c.setTime(currDate);
+      c.set(Calendar.DAY_OF_MONTH, c.getActualMinimum(Calendar.DAY_OF_MONTH));
+      java.util.Date temp = c.getTime();
+      java.sql.Date firstOfMonth = new java.sql.Date(temp.getTime());
+      c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
+      temp = c.getTime();
+      java.sql.Date lastOfMonth = new java.sql.Date(temp.getTime());
+
+      //String query_3 = "select balance from BalanceHistory where aid = ? and MONTH(date) = MONTH(?) and YEAR(date) = YEAR(?)" +
+      //        " and (DAY(date) = DAY(?) or DAY(date) = DAY(?))";
+      String query_3 = "select balance from BalanceHistory where aid = ? and (date = ? or date = ?)";
+      PreparedStatement dateStatement = connection.prepareStatement(query_3);
+      dateStatement.setInt(1, aid);
+      dateStatement.setDate(2, firstOfMonth);
+      dateStatement.setDate(3, lastOfMonth);
+      ResultSet resultSet_3 = dateStatement.executeQuery();
+      resultSet_3.next();
+      double startBalance = resultSet_3.getDouble(1);
+      resultSet_3.next();
+      double endBalance = resultSet_3.getDouble(1);
+
+
 			System.out.println("MONTHLY STATEMENT FOR: " + cname + " (" + email + ")\n");
-			while (resultSet_2.next()) {
+      System.out.println("Starting Balance: " + startBalance);
+      System.out.println("End Balance: " + endBalance);
+      while (resultSet_2.next()) {
 				System.out.println(resultSet_2.getString(1) + "|" + resultSet_2.getString(2) + "|" + resultSet_2.getDate(3) + "|" + resultSet_2.getString(4));
 			}
       statement.close();
