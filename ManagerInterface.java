@@ -50,7 +50,7 @@ public class ManagerInterface {
 		ManagerInterface managerifc = new ManagerInterface();
 
 		boolean loggedIn = false;
-		System.out.println("Welcome to the Trader Interface of StarsRUs");
+		System.out.println("Welcome to the Manager Interface of StarsRUs");
 		while (!loggedIn) {
 			try {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
