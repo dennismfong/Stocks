@@ -18,25 +18,30 @@ public class ManagerInterface {
 			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 
 			Statement statement = connection.createStatement();
+			Statement statement_2 = connection.createStatement();
 
-			String query = "select * from Customer where Customer.username = \"" + username + "\" and Customer.password = \"" + password + "\"";
+			String query = "select * from Customer where Customer.username = \"" + username + "\" and Customer.password = \"" + password +
+              "\" and Customer.isManager = 1";
 			ResultSet resultSet = statement.executeQuery(query);
 
 			boolean success = false;
 
-			if (resultSet.next())
-				success = true;
-			else {
-				return false;
-			}
-			this.user.setUsername(resultSet.getString(6));
-			this.user.setName(resultSet.getString(1));
+      if (resultSet.isBeforeFirst()) {
+        // Matching row in the database
+        success = true;
+        resultSet.next();
+        this.user.setUsername(resultSet.getString(6));
+        this.user.setName(resultSet.getString(1));
+        String query_2 = "select balance from MarketAccount where MarketAccount.aid in (select aid from Account where Account.username = \"" + username + "\")";
+        ResultSet resultSet_2 = statement_2.executeQuery(query);
+        this.user.setBalance(resultSet.getFloat(1));
+      }
+      else {
+        success = false;
+      }
 
-			String query_2 = "select balance from MarketAccount where MarketAccount.aid in (select aid from Account where Account.username = \"" + username + "\")";
-			ResultSet resultSet_2 = statement.executeQuery(query);
-
-			this.user.setBalance(resultSet.getFloat(1));
 			statement.close();
+			statement_2.close();
 			connection.close();
 
 			return success;
