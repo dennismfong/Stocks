@@ -177,7 +177,8 @@ public class ManagerInterface {
       double endBalance = resultSet_3.getDouble(1);
 
       // Getting the net earnings and net losses
-      String transactionQuery = "select * from Transaction t join StockTransaction s on t.tid = s.tid where" +
+      String transactionQuery = "select * from Transaction t left join StockTransaction s on t.tid = s.tid left join" +
+              " MarketTransaction m on t.tid = m.tid where" +
               " date >= ? and date <= ?";
       PreparedStatement netStatement = connection.prepareStatement(transactionQuery);
       netStatement.setDate(1, firstOfMonth);
@@ -186,25 +187,30 @@ public class ManagerInterface {
       double earnings = 0;
       double losses = 0;
       double interest = 0;
+      double commission = 0;
       while (resultSet_4.next()) {
         if (resultSet_4.getString(2).toLowerCase().contains("stock bought")) {
           losses += resultSet_4.getDouble(9);
+          commission += 20.0;
         }
         else if (resultSet_4.getString(2).toLowerCase().contains("stock sold")) {
           earnings += resultSet_4.getDouble(9);
+          commission += 20.0;
         }
         else if (resultSet_4.getString(2).toLowerCase().contains("interest")) {
-          interest += resultSet_4.getDouble(9);
+          interest += resultSet_4.getDouble(11);
         }
       }
 
 			System.out.println("MONTHLY STATEMENT FOR: " + cname + " (" + email + ")\n");
       System.out.println("Starting Balance:   " + startBalance);
       System.out.println("End Balance:        " + endBalance);
-      System.out.println("Total earnings:     " + earnings + interest);
+      System.out.println("Total earnings:     " + (earnings + interest));
       System.out.println("  from stocks: "      + earnings);
       System.out.println("  from interest: "    + interest);
-      System.out.println("Total losses:       " + losses + "\n");
+      System.out.println("Total losses:       " + losses);
+      System.out.println("  commission paid:       " + commission + "\n");
+
       while (resultSet_2.next()) {
 				System.out.println(resultSet_2.getString(1) + " | " + resultSet_2.getString(2) + " | " + resultSet_2.getDate(3) + " | " + resultSet_2.getString(4));
 			}
