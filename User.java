@@ -8,6 +8,7 @@ public class User{
 	private String HOST;
 	private String USER;
 	private String PWD;
+	private boolean isManager;
 
 	public User() {
 		HOST = Config.host;
@@ -80,6 +81,7 @@ public class User{
         this.name = resultSet.getString(1);
         this.ssn = resultSet.getString(7);
         this.taxId = resultSet.getInt(5);
+        this.isManager = resultSet.getBoolean(10);
       }
     } catch (Exception e) {
       System.out.println(e);
