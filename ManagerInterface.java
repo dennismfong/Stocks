@@ -32,9 +32,6 @@ public class ManagerInterface {
         resultSet.next();
         this.user.setUsername(resultSet.getString(6));
         this.user.setName(resultSet.getString(1));
-        String query_2 = "select balance from MarketAccount where MarketAccount.aid in (select aid from Account where Account.username = \"" + username + "\")";
-        ResultSet resultSet_2 = statement_2.executeQuery(query);
-        this.user.setBalance(resultSet.getFloat(1));
       }
       else {
         success = false;
@@ -89,7 +86,7 @@ public class ManagerInterface {
 							+ "\n4.     Generate Government Drug & Tax Evasion Report (DTER)"
 							+ "\n5.     Customer Report"
 							+ "\n6.     Delete Transactions"
-							+ "\n7.    exit"
+							+ "\n7.     exit"
 							+ "\n\n"
 			);
 
