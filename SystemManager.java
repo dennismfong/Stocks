@@ -69,6 +69,9 @@ public class SystemManager {
       Connection connection = DriverManager.getConnection(this.HOST,
               this.USER,
               this.PWD);
+      Connection connection1 = DriverManager.getConnection(this.HOST,
+              this.USER,
+              this.PWD);
       Statement statement = connection.createStatement();
       String query = "select * from Stock";
       ResultSet resultSet = statement.executeQuery(query);
@@ -82,9 +85,26 @@ public class SystemManager {
         preparedStatement.setDouble(2, resultSet.getDouble(3));
         preparedStatement.setString(3, resultSet.getString(1));
         preparedStatement.executeUpdate();
-
       }
 
+      query = "select m.aid, balance from MarketAccount m join Account a on m.aid =  a.aid";
+      statement = connection.createStatement();
+      resultSet = statement.executeQuery(query);
+      while (resultSet.next()) {
+        int aid = resultSet.getInt(1);
+        double balance = resultSet.getDouble(2);
+        query = "insert into BalanceHistory values(?,?,?)";
+        java.sql.Date dateDB = new java.sql.Date(currDate.getTime());
+        PreparedStatement populateStatement = connection1.prepareStatement(query);
+        populateStatement.setInt(1, aid);
+        populateStatement.setDate(2, dateDB);
+        populateStatement.setDouble(3, balance);
+        populateStatement.executeUpdate();
+        populateStatement.close();
+      }
+
+      statement.close();
+      connection1.close();
       preparedStatement.close();
       connection.close();
     } catch (Exception e) {
