@@ -17,7 +17,7 @@ public class TraderInterface {
   private String USER = Config.user;
   private String PWD = Config.pwd;
 
-  private String MOVIE = "jdbc:mysql://cs174a.engr.ucsb.edu:3306/moviesDB";
+  private String MOVIEHOST = "jdbc:mysql://cs174a.engr.ucsb.edu:3306/moviesDB";
 
   public TraderInterface() {
     user = new User();
@@ -229,15 +229,19 @@ public class TraderInterface {
                 traderifc.showBalance();
                 break;
               case 6:
+                traderifc.getStockTransHistory();
                 break;
               case 7:
                 traderifc.listStockDetails();
                 break;
               case 8:
+                traderifc.displayMovieDetails();
                 break;
               case 9:
+                traderifc.displayTopMovies();
                 break;
               case 10:
+                traderifc.displayMovieReviews();
                 break;
               case 11:
                 loggedIn = false;
@@ -370,7 +374,7 @@ public class TraderInterface {
   
       PreparedStatement preparedStatement = connection.prepareStatement(transactionString);
       preparedStatement.setInt(1, tid);
-      preparedStatement.setString(2, " Deposit ");
+      preparedStatement.setString(2, "Deposit");
       preparedStatement.setDate(3, dateDB);
       preparedStatement.setInt(4, aid);
       preparedStatement.executeUpdate();
@@ -424,7 +428,7 @@ public class TraderInterface {
 
         PreparedStatement preparedStatement = connection.prepareStatement(transactionString);
         preparedStatement.setInt(1, tid);
-        preparedStatement.setString(2, " Withdrawal ");
+        preparedStatement.setString(2, "Withdrawal");
         preparedStatement.setDate(3, dateDB);
         preparedStatement.setInt(4, aid);
         preparedStatement.executeUpdate();
@@ -532,18 +536,18 @@ public class TraderInterface {
             System.out.println("How many shares would you like to purchase? Enter 0 in order to change stock name. (There is $20 commission with every transaction)");
             reader = new BufferedReader(new InputStreamReader(System.in));
             int amount = Integer.parseInt(reader.readLine());
-            double totalPrice = currentPrice * amount + 20;
+            double totalPrice = currentPrice * amount;
             if (amount == 0){
               break;
             } else if (amount > numStocks) {
               System.out.println("CANNOT PURCHASE STOCK: NOT ENOUGH STOCKS REMAINING");
-            } else if (this.user.getBalance() < totalPrice) {
+            } else if (this.user.getBalance() < totalPrice + 20) {
               System.out.println("CANNOT PURCHASE STOCK: NOT ENOUGH MONEY IN BALANCE");
             } else if (amount > 0) {
               query = "UPDATE Stock SET numStocks = "+ (numStocks-amount) +" WHERE symbol = \"" + symbol + "\"";  
               statement.executeUpdate(query);
               
-              this.user.setBalance(this.user.getBalance() - totalPrice);
+              this.user.setBalance(this.user.getBalance() - totalPrice - 20);
               int aid = this.user.getMarketAccountID();
               
               query = "select * from MarketDate";
@@ -562,7 +566,7 @@ public class TraderInterface {
 
               PreparedStatement preparedStatement = connection.prepareStatement(transactionString);
               preparedStatement.setInt(1, tid);
-              preparedStatement.setString(2, " Stock bought ");
+              preparedStatement.setString(2, "Stock bought");
               preparedStatement.setDate(3, dateDB);
               preparedStatement.setInt(4, aid);
               preparedStatement.executeUpdate();
@@ -578,8 +582,9 @@ public class TraderInterface {
               preparedStatement.setDouble(5, totalPrice);
               preparedStatement.executeUpdate();
               
-              System.out.printf("SUCCESSFULLY PURCHASED "+amount+" SHARES OF "+symbol+" FOR "+totalPrice+" DOLLARS. REMAINING BALANCE:  %.2f \n", this.user.getBalance());
-        
+              System.out.printf("SUCCESSFULLY PURCHASED "+amount+" SHARES OF "+symbol+" FOR %.2f. ", (totalPrice+20));
+                    System.out.printf("NEW BALANCE:  %.2f \n",this.user.getBalance());              
+
               query = "SELECT * FROM StockBalance where buyPrice = "+currentPrice
                 + " and aid = "+aid 
                 + " and symbol = \""+symbol+"\"";
@@ -663,8 +668,8 @@ public class TraderInterface {
           System.out.println("Which share value of your stock would you like to sell? Enter the corresponding row number.");
           int i = 0;
           for(double val: stockValues){
-            System.out.println(i+". "+val+" DOLLARS. QUANTITY OWNED: "
-              +stockQuantity.get(i)+ " SHARES. TOTAL VALUE: "+ totalValues.get(i) +" DOLLARS.");
+            System.out.printf(i+". "+val+" DOLLARS. QUANTITY OWNED: "
+              +stockQuantity.get(i)+ " SHARES. TOTAL VALUE: %.2f DOLLARS. \n", totalValues.get(i));
             i++;
           }
           while(true){
@@ -674,8 +679,8 @@ public class TraderInterface {
               System.out.println("INVALID ROW.");
             else{
               double targetVal = stockValues.get(row);
-              double targetQuantity = stockQuantity.get(row);
-              System.out.println("QUANTITES OF STOCK "+symbol+" OWNED AT VALUE "+targetVal+" DOLLARS: "+targetQuantity);
+              int targetQuantity = stockQuantity.get(row);
+              System.out.printf("QUANTITES OF STOCK "+symbol+" OWNED AT VALUE %.2f DOLLARS: "+targetQuantity+"\n", targetVal);
               System.out.println("How many shares of your stock would you like to sell? There is a $20 commission with every transaction. Enter 0 to go back");
               while(true){
                 reader = new BufferedReader(new InputStreamReader(System.in));
@@ -723,7 +728,7 @@ public class TraderInterface {
 
                     PreparedStatement preparedStatement = connection.prepareStatement(transactionString);
                     preparedStatement.setInt(1, tid);
-                    preparedStatement.setString(2, " Stock sold ");
+                    preparedStatement.setString(2, "Stock sold");
                     preparedStatement.setDate(3, dateDB);
                     preparedStatement.setInt(4, aid);
                     preparedStatement.executeUpdate();
@@ -739,7 +744,8 @@ public class TraderInterface {
                     preparedStatement.setDouble(5, totalPrice);
                     preparedStatement.executeUpdate();
                     
-                    System.out.printf("SUCCESSFULLY SOLD "+quantity+" SHARES OF "+symbol+" FOR "+totalPrice+" DOLLARS. NEW BALANCE:  %.2f \n", this.user.getBalance());
+                    System.out.printf("SUCCESSFULLY SOLD "+quantity+" SHARES OF "+symbol+" FOR %.2f. ", (totalPrice-20));
+                    System.out.printf("NEW BALANCE:  %.2f \n",this.user.getBalance());
               
                     preparedStatement.close();
                     statement.close();
@@ -762,29 +768,124 @@ public class TraderInterface {
     }
   }
 
-  public void displayMovieDetails(String movieTitle) {
-
-  }
-
-/*  public java.sql.Date getDate(){
-    java.sql.Date dateDB;
+  public void getStockTransHistory(){
     try {
+      int aid = this.user.getMarketAccountID();
       Class.forName("com.mysql.jdbc.Driver");
       Connection connection = DriverManager.getConnection(HOST, USER, PWD);
-
       Statement statement = connection.createStatement();
 
-      String query = "select * from MarketDate";
+      String query = "select * from Transaction t JOIN StockTransaction s ON t.tid = s.tid WHERE t.aid = aid";
       ResultSet resultSet = statement.executeQuery(query);
-      resultSet.next();
-      Date date = resultSet.getDate(1);
-      java.sql.Date dateDB = new java.sql.Date(date.getTime());
-      statement.close();
-      connection.close();
-      return dateDB;
+
+      System.out.println("DISPLAYING ALL STOCK TRANSACTIONS IN PAST MONTH");
+
+      while(resultSet.next()){
+        String type = resultSet.getString(2);
+        Date date = resultSet.getDate(3);
+        int quantity = resultSet.getInt(6);
+        double price = resultSet.getDouble(7);
+        String symbol = resultSet.getString(8);
+        double totalPrice = resultSet.getDouble(9);
+
+        System.out.println("--------\n"+date);
+        System.out.println(type);
+        System.out.printf(quantity + " OF " + symbol + " FOR %.2f \n", price);
+        System.out.printf("TOTAL COST OF TRANSACTION (WITH $20 COMMISSION INCLUDED): %.2f \n", (totalPrice+20));
+        System.out.println("--------");
+      }
     } catch (Exception e) {
       System.err.println(e);
     }
-    return dateDB;
-  }*/
+  }
+
+  public void displayMovieDetails() {
+    try{
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(MOVIEHOST, USER, PWD);
+      Statement statement = connection.createStatement();
+      System.out.println("What movie would you like information on?");
+      while(true){
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String title = reader.readLine();
+
+        String query = "select rating, production_year from Movies where title = \"" + title + "\"";
+        ResultSet resultSet = statement.executeQuery(query);
+
+        if(resultSet.next()){
+          float rating = resultSet.getFloat(1);
+          int production_year = resultSet.getInt(2);
+          System.out.println("Produced in: "+production_year+"\nMovie Rating: "+rating);
+          break;
+        }
+        else{
+          System.out.println("ERROR: NO SUCH MOVIE IN DATABASE");
+        }
+      }
+      statement.close();
+      connection.close();
+    } catch (Exception e) {
+      System.err.println(e);
+    }
+  }
+
+  public void displayTopMovies() {
+    try{
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(MOVIEHOST, USER, PWD);
+      Statement statement = connection.createStatement();
+      System.out.println("What time period do you want see the top movies for?");
+
+      System.out.println("Lower bound: ");
+      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+      int lb = Integer.parseInt(reader.readLine());
+
+      System.out.println("Upper bound: ");
+      reader = new BufferedReader(new InputStreamReader(System.in));
+      int ub = Integer.parseInt(reader.readLine());
+
+      String query = "select title, production_year from Movies where rating = 5 and production_year >= "+lb+" and production_year <= "+ub; 
+      ResultSet resultSet = statement.executeQuery(query);
+
+      System.out.println("--------\nMovies between "+lb+"-"+ub+" with a rating of 5:");
+      while(resultSet.next()){
+        System.out.println(resultSet.getString(1) + " ("+resultSet.getInt(2)+")");
+      }
+      System.out.println("--------");
+      statement.close();
+      connection.close();
+    } catch (Exception e) {
+      System.err.println(e);
+    }
+  }
+
+  public void displayMovieReviews() {
+    try{
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(MOVIEHOST, USER, PWD);
+      Statement statement = connection.createStatement();
+      System.out.println("What movie would you like reviews on?");
+      while(true){
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String title = reader.readLine();
+
+        String query = "select rating, production_year from Movies where title = \"" + title + "\"";
+        ResultSet resultSet = statement.executeQuery(query);
+
+        if(resultSet.next()){
+          float rating = resultSet.getFloat(1);
+          int production_year = resultSet.getInt(2);
+          System.out.println("Produced in: "+production_year+"\nMovie Rating: "+rating);
+          break;
+        }
+        else{
+          System.out.println("ERROR: NO SUCH MOVIE IN DATABASE");
+        }
+      }
+      statement.close();
+      connection.close();
+    } catch (Exception e) {
+      System.err.println(e);
+    }
+  }
 }
