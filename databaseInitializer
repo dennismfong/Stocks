@@ -1,0 +1,171 @@
+insert into Customer(cname, username, password, address, state, phoneNum, email, taxId, ssn, isManager) values("John Admin","admin","secret","Stock Company SB","CA","(805)6374632","admin@stock.com",1000,"606-60-6060", 1);
+
+insert into Customer(cname, username, password, address, state, phoneNum, email, taxId, ssn, isManager) values("Alfred Hitchcock","alfred","hi","6667 El Colegio #40 SB","CA","(805)2574499","alfred@hotmail.com",1022,"606-76-7900", 0);
+
+insert into Customer(cname, username, password, address, state, phoneNum, email, taxId, ssn, isManager) values("Billy Clinton","billy","cl","5777 Hollister SB","CA","(805)5629999","billy@yahoo.com",3045,"606-76-7903", 0);
+
+insert into Customer(cname, username, password, address, state, phoneNum, email, taxId, ssn, isManager) values("Cindy Laugher","cindy","la","7000 Hollister SB","CA","(805)6930011","cindy@hotmail.com",2034,"606-70-7900", 0);
+
+insert into Customer(cname, username, password, address, state, phoneNum, email, taxId, ssn, isManager) values("David Copperfill","david","co","1357 State St SB","CA","(805)8240011","david@yahoo.com",4093,"506-78-7900", 0);
+
+insert into Customer(cname, username, password, address, state, phoneNum, email, taxId, ssn, isManager) values("Elizabeth Sailor","sailor","sa","4321 State St SB","CA","(805)1234567","sailor@hotmail.com",1234,"436-76-7900", 0);
+
+insert into Customer(cname, username, password, address, state, phoneNum, email, taxId, ssn, isManager) values("George Brush","brush","br","5346 Foothill Av","CA","(805)1357999","george@hotmail.com",8956,"632-45-7900", 0);
+
+insert into Customer(cname, username, password, address, state, phoneNum, email, taxId, ssn, isManager) values("Ivan Stock","ivan","st","1235 Johnson Dr","NJ","(805)3223243","ivan@yahoo.com",2341,"609-23-7900", 0);
+
+insert into Customer(cname, username, password, address, state, phoneNum, email, taxId, ssn, isManager) values("Joe Pepsi","joe","pe","3210 State St","CA","(805)5668123","pepsi@pepsi.com",0456,"646-76-3430", 0);
+
+insert into Customer(cname, username, password, address, state, phoneNum, email, taxId, ssn, isManager) values("Magic Jordon","magic","jo","3852 Court Rd","NJ","(805)4535539","jordon@jordon.org",3455,"646-76-8843", 0);
+
+insert into Customer(cname, username, password, address, state, phoneNum, email, taxId, ssn, isManager) values("Olive Stoner","olive","st","6689 El Colegio #151","CA","(805)2574499","olive@yahoo.com",1123,"645-34-7900", 0);
+
+insert into Customer(cname, username, password, address, state, phoneNum, email, taxId, ssn, isManager) values("Frank Olson","frank","ol","6910 Whittier Dr","CA","(805)3456789","frank@gmail.com",3306,"345-23-2134", 0);
+
+insert into Stock(symbol, openingPrice, currentPrice, numStocks, adid) values ("SKB", 40.00, 40.00, 2000, 001);
+
+insert into Stock(symbol, openingPrice, currentPrice, numStocks, adid) values ("SMD", 71.00, 71.00, 2700, 002);
+
+insert into Stock(symbol, openingPrice, currentPrice, numStocks, adid) values ("STC", 32.50, 32.50, 800, 003);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(901, "SKB", 40.00, 100, 4000.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(902, "SMD", 71.00, 500, 35500.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(902, "STC", 32.50, 100, 3250.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(903, "STC", 32.50, 250, 8125.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(904, "SKB", 40.00, 100, 4000.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(904, "SMD", 71.00, 500, 35500.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(904, "STC", 32.50, 50, 3250.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(905, "SMD", 71.00, 1000, 71000.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(906, "SKB", 40.00, 100, 4000.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(907, "SMD", 71.00, 300, 21300.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(908, "SKB", 40.00, 500, 20000.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(908, "STC", 32.50, 100, 3250.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(908, "SMD", 71.00, 200, 14200.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(909, "SKB", 40.00, 1000, 40000.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(910, "SKB", 40.00, 100, 4000.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(910, "SMD", 71.00, 100, 7100.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(910, "STC", 32.50, 100, 3250.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(911, "SKB", 40.00, 100, 4000.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(911, "STC", 32.50, 200, 6500.00);
+
+insert into StockBalance(aid, symbol, buyPrice, quantity, totalValue) values(911, "SMD", 71.00, 100, 7100.00);
+
+insert into Account(taxId, aid, balance) values (1022,001,10000);
+
+insert into Account(taxId, aid, balance) values (3045,002,100000);
+
+insert into Account(taxId, aid, balance) values (2034,003,50000);
+
+insert into Account(taxId, aid, balance) values (4093,004,45000);
+
+insert into Account(taxId, aid, balance) values (1234,005,200000);
+
+insert into Account(taxId, aid, balance) values (8956,006,5000);
+
+insert into Account(taxId, aid, balance) values (2341,007,2000);
+
+insert into Account(taxId, aid, balance) values (0456,008,10000);
+
+insert into Account(taxId, aid, balance) values (3455,009,130200);
+
+insert into Account(taxId, aid, balance) values (1123,010,35000);
+
+insert into Account(taxId, aid, balance) values (3306,011,30500);
+
+insert into MarketAccount(interest, aid) values (0.03,001);
+
+insert into MarketAccount(interest, aid) values (0.03,002);
+
+insert into MarketAccount(interest, aid) values (0.03,003);
+
+insert into MarketAccount(interest, aid) values (0.03,004);
+
+insert into MarketAccount(interest, aid) values (0.03,005);
+
+insert into MarketAccount(interest, aid) values (0.03,006);
+
+insert into MarketAccount(interest, aid) values (0.03,007);
+
+insert into MarketAccount(interest, aid) values (0.03,008);
+
+insert into MarketAccount(interest, aid) values (0.03,009);
+
+insert into MarketAccount(interest, aid) values (0.03,010);
+
+insert into MarketAccount(interest, aid) values (0.03,011);
+
+insert into Account(taxId, aid, balance) values (1022,901,0);
+
+insert into Account(taxId, aid, balance) values (3045,902,0);
+
+insert into Account(taxId, aid, balance) values (2034,903,0);
+
+insert into Account(taxId, aid, balance) values (4093,904,0);
+
+insert into Account(taxId, aid, balance) values (1234,905,0);
+
+insert into Account(taxId, aid, balance) values (8956,906,0);
+
+insert into Account(taxId, aid, balance) values (2341,907,0);
+
+insert into Account(taxId, aid, balance) values (0456,908,0);
+
+insert into Account(taxId, aid, balance) values (3455,909,0);
+
+insert into Account(taxId, aid, balance) values (1123,910,0);
+
+insert into Account(taxId, aid, balance) values (3306,911,0);
+
+insert into StockAccount(aid) values (901);
+
+insert into StockAccount(aid) values (902);
+
+insert into StockAccount(aid) values (903);
+
+insert into StockAccount(aid) values (904);
+
+insert into StockAccount(aid) values (905);
+
+insert into StockAccount(aid) values (906);
+
+insert into StockAccount(aid) values (907);
+
+insert into StockAccount(aid) values (908);
+
+insert into StockAccount(aid) values (909);
+
+insert into StockAccount(aid) values (910);
+
+insert into StockAccount(aid) values (911);
+
+insert into ActorDirector(symbol, adname, dob, adid) values ("SKB", "Kim Basinger", "1958/12/8", 001);
+
+insert into ActorDirector(symbol, adname, dob, adid) values ("SMD", "Michael Douglas", "1944/9/25", 002);
+
+insert into ActorDirector(symbol, adname, dob, adid) values ("STC", "Tom Cruise", "1962/7/3", 002);
+
+insert into Contract(adid, movieTitle, role, year, value) values (001, "L.A. Confidential", "Actor", 1997, 5000000);
+
+insert into Contract(adid, movieTitle, role, year, value) values (002, "A Perfect Murder", "Actor", 1998, 10000000);
+
+insert into Contract(adid, movieTitle, role, year, value) values (003, "Jerry Maguire", "Actor", 1996, 5000000);
+
+insert into MarketDate values ("2013/3/16");

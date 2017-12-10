@@ -1,0 +1,14 @@
+delete from Account;
+delete from ActorDirector;
+delete from BalanceHistory;
+delete from Contract;
+delete from Customer;
+delete from MarketAccount;
+delete from MarketDate;
+delete from MarketTransaction;
+delete from Stock;
+delete from StockAccount;
+delete from StockBalance;
+delete from StockInstance;
+delete from StockTransaction;
+delete from Transaction;
