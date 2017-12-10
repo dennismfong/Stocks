@@ -445,7 +445,7 @@ public class TraderInterface {
     }
   }
 
-  public void listStockDetails(String stock) {
+  public void listStockDetails() {
     try {
       Class.forName("com.mysql.jdbc.Driver");
       Connection connection = DriverManager.getConnection(HOST, USER, PWD);
@@ -578,7 +578,7 @@ public class TraderInterface {
           while(true){
             double currentPrice = resultSet.getDouble(3);
             double numStocks = resultSet.getInt(4);
-            System.out.println("STOCK: "+symbol+". CURRENT PRICE: "+resultSet.getDouble(3)+" DOLLARS. YOUR AVAILABLE SHARES: "+ 1;//userShares;
+            System.out.println("STOCK: "+symbol+". CURRENT PRICE: "+resultSet.getDouble(3)+" DOLLARS. YOUR AVAILABLE SHARES: "+ 1);//userShares;
             System.out.println("How many shares would you like to sell? Enter 0 in order to change stock name. (There is $20 commission with every transaction)");
             reader = new BufferedReader(new InputStreamReader(System.in));
             int amount = Integer.parseInt(reader.readLine());
