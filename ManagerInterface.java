@@ -99,6 +99,7 @@ public class ManagerInterface {
         int answer = Integer.parseInt(reader.readLine());
         switch (answer) {
           case 1:
+            System.out.println("\n");
             break;
           case 2:
             System.out.println("\nEnter username of customer");
@@ -233,32 +234,159 @@ public class ManagerInterface {
 		}
 	}
 
-	public void addInterest(){
-		try {
-			//UPDATE Account A, MarketAccount MA
-			//SET
-			//A.balance = A.balance * MA.interest
-			//WHERE
-			//A.aid = MA.aid;
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
-			Statement statement = connection.createStatement();
+  //input is the market account after getting it from the user
+//	public void addInterest(int aid) {
+//	  try {
+//      java.util.Date currDate = systemManager.getDate();
+//      java.sql.Date dateDB = new java.sql.Date(currDate.getTime());
+//	    Class.forName("com.mysql.jdbc.Driver");
+//	    Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+//	    String query = "select * from Transaction t left join StockTransaction s on t.tid=s.tid left join MarketTransaction m on t.tid=m.tid " +
+//              "where MONTH(t.date) = MONTH(?) and YEAR(t.date) = YEAR(?) order by date";
+//	    PreparedStatement preparedStatement = connection.prepareStatement(query);
+//	    preparedStatement.setDate(1, dateDB);
+//	    preparedStatement.setDate(2, dateDB);
+//      ResultSet resultSet = preparedStatement.executeQuery();
+//
+//      Calendar c = Calendar.getInstance();
+//      c.setTime(currDate);
+//      c.set(Calendar.DAY_OF_MONTH, c.getActualMinimum(Calendar.DAY_OF_MONTH));
+//      java.util.Date temp = c.getTime();
+//      java.sql.Date firstOfMonth = new java.sql.Date(temp.getTime());
+//      query = "select balance from BalanceHistory where aid = ? and date = ?";
+//      PreparedStatement preparedStatement1 = connection.prepareStatement(query);
+//      preparedStatement1.setInt(1, aid);
+//      preparedStatement1.setDate(2, firstOfMonth);
+//      ResultSet resultSet1 = preparedStatement1.executeQuery();
+//      resultSet1.next();
+//
+//      double dailyBalance = resultSet1.getDouble(3); // set initial daily balance to beginning of month
+//      Map<Integer, Double> balancePeriods = new HashMap<Integer, Double>(); // Maps num days to balance
+//      java.util.Date resultDate = firstOfMonth;
+//      int numDays = 0;
+//      int tempDays = 0;
+//
+//      while (resultSet.next()) {
+//        resultDate = resultSet.getDate(3);
+//        numDays = (int)(resultDate.getTime() - firstOfMonth.getTime()); // Get number of days between current date and first of month
+//        if (resultSet.getDate(3).equals(resultDate)) { // is a repeat
+//          continue;
+//        }
+//        else {
+//          balancePeriods.put(tempDays, dailyBalance);
+//          tempDays = numDays;
+//        }
+//
+//        String type = resultSet.getString(2).toLowerCase();
+//        double currentTransaction = 0.0;
+//        if (type.contains("deposit")) {
+//          currentTransaction = resultSet.getDouble(11);
+//          dailyBalance += currentTransaction;
+//        }
+//        else if (type.contains("withdrawal")) {
+//          currentTransaction = resultSet.getDouble(11);
+//          dailyBalance -= currentTransaction;
+//        }
+//        else if (type.contains("stock sold")) {
+//          currentTransaction = resultSet.getDouble(9);
+//          dailyBalance += currentTransaction;
+//        }
+//        else if (type.contains("stock bought")) {
+//          currentTransaction = resultSet.getDouble(9);
+//          dailyBalance -= currentTransaction;
+//        }
+//
+//      }
+//    } catch (Exception e) {
+//	    System.err.println(e);
+//    }
+//  }
 
-			String query = "select balance, interest from Account a JOIN MarketAccount ma ON ma.aid = a.aid";
-			ResultSet resultSet = statement.executeQuery(query);
+  public void addAllInterest() {
+	  
+  }
 
-			while (resultSet.next()) {
-				resultSet.updateFloat(1, resultSet.getFloat(1) * (1+resultSet.getFloat(2)));
-				resultSet.updateRow();
-			}
-			statement.close();
-			connection.close();
+  public void addInterest(int aid) {
+	  try {
+	    Class.forName("com.mysql.jdbc.Driver");
+	    Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 
-			System.out.println("INTEREST ADDED TO MARKET ACCOUNTS");
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-	}
+      java.util.Date currDate = systemManager.getDate();
+      java.sql.Date dateDB = new java.sql.Date(currDate.getTime());
+      String query = "select balance from BalanceHistory where aid = ? and MONTH(t.date) = MONTH(?) and YEAR(t.date) = YEAR(?)";
+      PreparedStatement preparedStatement = connection.prepareStatement(query);
+      preparedStatement.setInt(1, aid);
+      preparedStatement.setDate(2, dateDB);
+      preparedStatement.setDate(2, dateDB);
+      ResultSet resultSet = preparedStatement.executeQuery();
+
+      double sum = 0;
+      Calendar c = Calendar.getInstance();
+      c.setTime(currDate);
+      double days = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+      while (resultSet.next()) {
+        sum += resultSet.getDouble(1);
+      }
+
+      query = "select balance, taxId from Account where aid = ?";
+      PreparedStatement lastBalance = connection.prepareStatement(query);
+      ResultSet balanceSet = lastBalance.executeQuery();
+      balanceSet.next();
+      double lastDayBalance = balanceSet.getDouble(1);
+      int taxId = balanceSet.getInt(2);
+      sum += lastDayBalance;
+      double dailyAverage = sum/days;
+      double interest = dailyAverage * 0.03;
+
+      // Create record in the balance history
+      query = "insert into BalanceHistory values(?,?,?)";
+      PreparedStatement insert = connection.prepareStatement(query);
+      insert.setInt(1, aid);
+      insert.setDate(2, dateDB);
+      insert.setDouble(3, lastDayBalance);
+      insert.executeUpdate();
+
+      // Update the user's balance in account
+      User currentUser = new User();
+      currentUser.setTaxId(taxId);
+      currentUser.setBalance(currentUser.getBalance() + interest);
+
+      // Insert record into Transaction
+      query = "select COUNT(*) from Transaction";
+      Statement statement = connection.createStatement();
+      resultSet = statement.executeQuery(query);
+      resultSet.next();
+      int tid = resultSet.getInt(1) + 1;
+
+      String transactionString = "INSERT INTO Transaction(tid, type, date, aid) VALUES " +
+              "(?, ?, ?, ?)";
+
+      preparedStatement = connection.prepareStatement(transactionString);
+      preparedStatement.setInt(1, tid);
+      preparedStatement.setString(2, "Accrue interest");
+      preparedStatement.setDate(3, dateDB);
+      preparedStatement.setInt(4, aid);
+      preparedStatement.executeUpdate();
+
+      // insert record into Market Transasction
+      transactionString = "INSERT INTO MarketTransaction(tid, amount) VALUES " +
+              "(?, ?)";
+
+      preparedStatement = connection.prepareStatement(transactionString);
+      preparedStatement.setInt(1, tid);
+      preparedStatement.setDouble(2, interest);
+      preparedStatement.executeUpdate();
+
+      statement.close();
+      preparedStatement.close();
+      lastBalance.close();
+      insert.close();
+      connection.close();
+
+    } catch (Exception e) {
+	    System.err.println(e);
+    }
+  }
 
 	public void deleteTransaction(){
 		try {
