@@ -5,7 +5,7 @@ import java.sql.*;
 public class ManagerInterface {
 	private User user;
 	private String HOST = Config.host;
-	private String USER = Config.host;
+	private String USER = Config.user;
 	private String PWD = Config.pwd;
 
 	public ManagerInterface() {
