@@ -109,6 +109,7 @@ public class ManagerInterface {
           	managerifc.listActiveCustomer();
             break;
           case 4:
+          	managerifc.generateDTER();
             break;
           case 5:
             System.out.println("\nEnter username of customer");
@@ -272,6 +273,70 @@ public class ManagerInterface {
 	    connection.close();
     } catch (Exception e) {
 	    System.err.println(e);
+    }
+  }
+
+  public void generateDTER(){
+		try{
+      Class.forName("com.mysql.jdbc.Driver");
+      Connection connection = DriverManager.getConnection(HOST, USER, PWD);
+      Statement statement = connection.createStatement();
+
+      java.util.Date currDate = systemManager.getDate();
+      Calendar c = Calendar.getInstance();
+      c.setTime(currDate);
+      c.set(Calendar.DAY_OF_MONTH, c.getActualMinimum(Calendar.DAY_OF_MONTH));
+      java.util.Date temp = c.getTime();
+      java.sql.Date firstOfMonth = new java.sql.Date(temp.getTime());
+      c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
+      temp = c.getTime();
+      java.sql.Date lastOfMonth = new java.sql.Date(temp.getTime());
+
+      String query = "select distinct aid from Transaction t join StockTransaction s on t.tid = s.tid";
+      ResultSet resultSet = statement.executeQuery(query);
+      ArrayList<Integer> aids = new ArrayList<Integer>();
+      ArrayList<Integer> dterAids = new ArrayList<Integer>();
+      while(resultSet.next())
+      	aids.add(resultSet.getInt(1));
+
+      for(int aid: aids){
+	      String transactionQuery = "select * from Transaction t join StockTransaction s on t.tid = s.tid where" +
+	              " date >= ? and date <= ? and aid = " + aid;
+	      PreparedStatement netStatement = connection.prepareStatement(transactionQuery);
+	      netStatement.setDate(1, firstOfMonth);
+	      netStatement.setDate(2, lastOfMonth);
+	      ResultSet resultSet_4 = netStatement.executeQuery();
+	      double earnings = 0;
+	      double losses = 0;
+	      double interest = 0;
+	      while (resultSet_4.next()) {
+	        if (resultSet_4.getString(2).toLowerCase().contains("stock bought")) {
+	          losses += resultSet_4.getDouble(9);
+	        }
+	        else if (resultSet_4.getString(2).toLowerCase().contains("stock sold")) {
+	          earnings += resultSet_4.getDouble(9);
+	        }
+	        else if (resultSet_4.getString(2).toLowerCase().contains("interest")) {
+	          interest += resultSet_4.getDouble(9);
+	        }
+	      }
+	      if(earnings+interest-losses >= 10000)
+	      	dterAids.add(aid);
+      }
+      System.out.println("----LIST OF CUSTOMERS WITH EARNINGS OVER $10000 THIS MONTH----");
+      for(int daids: dterAids){
+      	query = "select cname, state from Customer c join Account a on c.taxId = a.taxId where a.aid = " + daids;
+        resultSet = statement.executeQuery(query);
+
+        while(resultSet.next()){
+          System.out.println(resultSet.getString(1) + " - " + resultSet.getString(2));
+        }
+
+      }
+      statement.close();
+      connection.close();
+    } catch (Exception e) {
+      System.err.println(e);
     }
   }
 
