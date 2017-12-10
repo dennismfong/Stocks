@@ -19,7 +19,7 @@ public class ManagerInterface {
 
 			Statement statement = connection.createStatement();
 
-			String query = "select * from Customer where Customer.username = " + username + " and Customer.password = " + password;
+			String query = "select * from Customer where Customer.username = \"" + username + "\" and Customer.password = \"" + password + "\"";
 			ResultSet resultSet = statement.executeQuery(query);
 
 			boolean success = false;
@@ -32,7 +32,7 @@ public class ManagerInterface {
 			this.user.setUsername(resultSet.getString(6));
 			this.user.setName(resultSet.getString(1));
 
-			String query_2 = "select balance from MarketAccount where MarketAccount.aid in (select aid from Account where Account.username = " + username + ")";
+			String query_2 = "select balance from MarketAccount where MarketAccount.aid in (select aid from Account where Account.username = \"" + username + "\")";
 			ResultSet resultSet_2 = statement.executeQuery(query);
 
 			this.user.setBalance(resultSet.getFloat(1));
@@ -118,12 +118,12 @@ public class ManagerInterface {
 
 			Statement statement = connection.createStatement();
 
-			String query = "select cname, email from Customer where Customer.username = " + username;
+			String query = "select cname, email from Customer where Customer.username = \"" + username + "\"";
 			ResultSet resultSet = statement.executeQuery(query);
 			String cname = resultSet.getString(1);
 			String email = resultSet.getString(2);
 
-			String query_2 = "select * from Transaction t, where t.aid IN( SELECT aid FROM Account a WHERE a.username = " + username + ")";
+			String query_2 = "select * from Transaction t, where t.aid IN( SELECT aid FROM Account a WHERE a.username = \"" + username + "\")";
 			ResultSet resultSet_2 = statement.executeQuery(query);
 
 			System.out.println("MONTHLY STATEMENT FOR: " + cname + " (" + email + ")\n");
@@ -143,7 +143,7 @@ public class ManagerInterface {
 			Connection connection = DriverManager.getConnection(HOST, USER, PWD);
 			Statement statement = connection.createStatement();
 
-			String query = "select * from Account a where a.username = " + username + " and a.aid IN( select aid from StockAccount sa where sa.aid = a.aid) join select * from Account a where a.username = " + username + " and a.aid IN( select aid from MarketAccount ma where ma.aid = a.aid)";
+			String query = "select * from Account a where a.username = \"" + username + "\" and a.aid IN( select aid from StockAccount sa where sa.aid = a.aid) join select * from Account a where a.username = \"" + username + "\" and a.aid IN( select aid from MarketAccount ma where ma.aid = a.aid)";
 			ResultSet resultSet = statement.executeQuery(query);
 			System.out.println("CUSTOMER REPORT FOR: " + username + "\n");
 			while (resultSet.next()) {
